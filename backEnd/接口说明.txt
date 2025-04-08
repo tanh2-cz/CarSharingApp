@@ -52,7 +52,7 @@ Response:
 }
 
 4. 查询记录（全局/局部查询）
-URL: /query?table_name=users 或 /api/query?table_name=users&record_id=1
+URL: /query?table_name=users 或 /query?table_name=users&record_id=1
 Method: GET
 Response:
 查询所有记录：
