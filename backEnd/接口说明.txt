@@ -1,0 +1,120 @@
+#####数据表统一增删改查接口#####
+
+1. 增加记录
+URL: /add
+Method: POST
+
+Request Body:
+{
+  "table_name": "users",
+  "record_data": {
+    "nickname": "JohnDoe",
+    "phone_number": "1234567890",
+    "password_login": "hashed_password"
+  }
+}
+
+Response:
+{
+  "message": "Record added successfully",
+  "record_id": 1
+}
+
+2. 删除记录
+URL: /delete
+Method: DELETE
+
+Request Body:
+{
+  "table_name": "users",
+  "record_id": 1
+}
+Response:
+{
+  "message": "Record deleted successfully"
+}
+
+3. 修改记录
+URL: /update
+Method: PUT
+
+Request Body:
+{
+  "table_name": "users",
+  "record_id": 1,
+  "field": "nickname",
+  "value": "NewNickname"
+}
+
+Response:
+{
+  "message": "Record updated successfully"
+}
+
+4. 查询记录（全局/局部查询）
+URL: /query?table_name=users 或 /api/query?table_name=users&record_id=1
+Method: GET
+Response:
+查询所有记录：
+{
+  "results": [
+    {"user_id": 1, "nickname": "JohnDoe", "phone_number": "1234567890"},
+    {"user_id": 2, "nickname": "JaneDoe", "phone_number": "9876543210"}
+  ]
+}
+查询单条记录：
+{
+  "result": {"user_id": 1, "nickname": "JohnDoe", "phone_number": "1234567890"}
+
+#####用户登录注册接口#####
+1. 用户注册
+URL: /signup
+Method: POST
+
+Request Body:
+{
+  "nickname": "JohnDoe",
+  "phone_number": "1234567890",
+  "password_login": "my_password"
+}
+
+Response:
+成功：
+{
+  "message": "注册成功！"
+}
+错误示例：
+{
+  "error": "昵称已被使用！"
+}
+
+2. 用户登录
+URL: /login
+Method: POST
+
+Request Body:
+{
+  "phone_number": "1234567890",
+  "password_login": "my_password"
+}
+
+Response:
+成功：
+{
+  "user_id": 1
+}
+错误示例：
+{
+  "error": "用户不存在！"
+}
+
+3. 用户登出
+URL: /logout
+Method: POST
+
+Response:
+{
+  "message": "登出成功！"
+}
+
+

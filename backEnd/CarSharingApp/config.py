@@ -13,5 +13,5 @@ DATABASE = "CarAppDb"
 DB_URI = f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
 SQLALCHEMY_DATABASE_URI = DB_URI
 
-#密钥
+#用于加密 session 的密钥
 SECRET_KEY = os.urandom(24)
