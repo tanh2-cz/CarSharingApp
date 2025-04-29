@@ -1,12 +1,128 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/index/index",
+			// 登录注册
+			"path": "pages/login/login",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "" // 页面最上方显示的字符串
+			}
+		},
+		// 下方导航栏是 首页 - 拼车 - 群聊 - 我的
+		{
+			// 首页地图显示
+			// 地址输入组件、行程信息显示组件
+			// 搜索框页面集成在这个页面中
+			"path": "pages/main/info",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			// 附近拼车通知 / 邀请
+			// 每条拼车通知信息的卡片组件 输入框组件可以复用
+			// 有筛选条件
+			"path": "pages/messages/index",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			// 拼车群聊 - 显示所有消息
+			// 每个群聊的卡片
+			"path": "pages/groups/info",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			// 拼车群聊 - 单个消息界面
+			// 每个群聊的卡片
+			"path": "pages/groups/chat",
+			"style": {
+				// "navigationBarTitleText": ""
+				"navigationStyle": "custom"
+			},
+			"app-plus": {
+				"titleNView":false
+			}
+		},
+		{
+			// 我的 - 整体界面
+			// 单个功能入口可以弄成组件（可弄可不弄）
+			"path": "pages/personal/info",
+			"style": {
+				"navigationStyle": "custom"
+			},
+			"app-plus": {
+				"titleNView":false
+			}
+		},
+		{
+			// 我的 - 所有订单
+			// 单个订单的卡片
+			// 搜索框和过滤条件可以复用 ?
+			"path": "pages/personal/orders",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			// 我的 - 所有订单
+			// 单个订单的卡片
+			// 搜索框和过滤条件可以复用 ?
+			"path": "pages/personal/orders/detail",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			// 我的 - 工资流水
+			// 单个订单的卡片
+			// 从上到下也是一张一张卡片啊 按照时间来
+			// 可以按照时间筛选
+			// 按时间筛选的组件 —— 详见第二次开会文档 类比微信的零钱流水相关组件
+			"path": "pages/personal/salaryflow",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			// 我的 - 工资流水 - 详情
+			// 放一个展示表单的组件 类比微信的展示
+			"path": "pages/personal/salaryflow/detail",
+			"style": {
+				"navigationBarTitleText": ""
 			}
 		}
 	],
+	"tabBar": {
+		"list": [
+			{
+				"pagePath": "pages/main/info",
+				"iconPath": "/static/image/home-default.png",
+				"selectedIconPath": "/static/image/home-selected.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/messages/index",
+				"iconPath": "/static/image/share-default2.png",
+				"selectedIconPath": "/static/image/share-selected3.png",
+				"text": "拼车"
+			},
+			{
+				"pagePath": "pages/groups/info",
+				"iconPath": "/static/image/message-default1.png",
+				"selectedIconPath": "/static/image/message-selected1.png",
+				"text": "群聊"
+			},
+			{
+				"pagePath": "pages/personal/info",
+				"iconPath": "/static/image/mine-default.png",
+				"selectedIconPath": "/static/image/mine-selected1.png",
+				"text": "我的"
+			}
+		]
+	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
