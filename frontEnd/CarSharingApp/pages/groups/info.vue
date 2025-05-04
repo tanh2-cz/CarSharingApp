@@ -2,9 +2,12 @@
   <view class="container">
     <!-- 顶部导航栏 -->
     <view class="top-bar">
-      <text class="title">消息列表</text>
+      <text class="title">消息</text>
+	  <view class="search-bar">
+	  		<input type="text" v-model="searchQuery" placeholder="搜索消息" class="search-input" />
+	  		<image src="/static/image/icon_search.png" class="search-icon"></image>
+	  </view>
       <view class="action-buttons">
-        <image src="/static/image/icon_filter.png" class="filter-icon" @tap="showFilter"></image>
         <image src="/static/image/icon_add.png" class="add-icon" @tap="showAddOptions"></image>
       </view>
     </view>
@@ -84,7 +87,8 @@ export default {
 		{ id: 14, name: '', icon: '', lastMessage: '', time: '' },
       ],
       showAddModal: false,
-	  startX: 0 // 记录触摸起始位置
+	  startX: 0 ,// 记录触摸起始位置,
+	  searchQuery: '',
     };
   },
   methods: {
@@ -232,8 +236,11 @@ export default {
 .action-buttons {
   display: flex;
   align-items: center;
-  padding-right: 10%;
-  gap: 10rpx;
+  width: 15%;
+  height: 100%;
+  /* background-color: #34aadc; */
+  justify-content: left;
+  margin-left: 5%;
 }
 
 .filter-icon, .add-icon {
@@ -265,7 +272,8 @@ export default {
   transition: var(--transition);
   animation: fadeInUp 0.3s forwards;
   opacity: 0;
-  width: 100%;
+  width: 92%;
+  /* background-color: #333; */
 }
 
 .chat-item:active {
@@ -433,21 +441,22 @@ export default {
 }
 
 .movable-view {
-  width: 200%;
+  width: 150%;
   height: 100%;
   display: flex;
 }
 
 /* 操作按钮区域 */
 .actions {
-  width: 45%;
+  width: 50%;
   height: 100%;
   display: flex;
-  justify-content: flex-end;
+  /* justify-content: flex-end; 从右边开始填方块 左边留白 */
+  background-color: #4a8cff;
 }
 
 .action-btn {
-  width: 150rpx;
+  width: 50%;
   height: 100%;
   display: flex;
   align-items: center;
@@ -466,5 +475,32 @@ export default {
 
 .unread {
   background-color: #34aadc;
+}
+
+.search-bar {
+  flex: 1;
+  background: #fff;
+  border-radius: 25rpx;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  border: 4rpx solid #ccc;
+  margin-left: 5%;
+  width: 60%;
+}
+
+.search-icon {
+  width: 50rpx;
+  height: 50rpx;
+  margin-right: 20rpx;
+  /* background-color: #333; */
+}
+
+.search-input {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333;
+  /* background-color: #28a745; */
+  margin-left:7%;
 }
 </style>
