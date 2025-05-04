@@ -16,7 +16,7 @@
     <view class="filter-panel" v-if="showFilter">
       <view class="filter-content">
         <view class="filter-header">
-          <text>筛选条件</text>
+          <text>高级筛选</text>
           <image src="/static/icon_close.png" class="close-icon" @tap="toggleFilter"></image>
         </view>
         <view class="filter-item">
@@ -33,6 +33,7 @@
             <view class="picker">{{ filter.time || "请选择时间" }}</view>
           </picker>
         </view>
+		<!-- 价位 -->
         <button class="apply-btn" @tap="applyFilter">应用筛选</button>
       </view>
     </view>
