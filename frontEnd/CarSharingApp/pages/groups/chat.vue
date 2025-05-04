@@ -47,17 +47,21 @@ export default {
       scrollTop: 0, // 滚动位置
       page: 1, // 消息分页
       chatList: [
-        // 与消息界面一致的 chatList 数据，用于查找 chatInfo
-        { id: 1, name: '简单运动', icon: '/static/logo.png', lastMessage: '叫一下，你有新的订单机会成功啦！', unreadCount: 7, time: '星期二' },
-        { id: 2, name: '简单·超划算', icon: '/static/logo.png', lastMessage: '上海龙华西车道，丽江旺吉额章零售 23.9元', unreadCount: 7, time: '星期二' },
-        { id: 3, name: '购票', icon: '/static/logo.png', lastMessage: '当天你还需要购票', unreadCount: 1, time: '星期二' },
-        { id: 4, name: '天天知福利', icon: '/static/logo.png', lastMessage: '优惠礼包更多彩礼比！0元奖励你啦！', unreadCount: 1, time: '星期二' },
-        { id: 5, name: '公共交通动态', icon: '/static/logo.png', lastMessage: '叫一下，请提供公交交通能推准啦！', unreadCount: 7, time: '星期五' },
-        { id: 6, name: '订单提醒', icon: '/static/logo.png', lastMessage: '[7条] 打车-支付成功', time: '2025/02/15' },
-        { id: 7, name: '简单出行服务', icon: '/static/logo.png', lastMessage: '[3条] 帮宁返程火车票优惠订', time: '2025/02/02' },
-        { id: 8, name: '简单酒店', icon: '/static/logo.png', lastMessage: '[3条] 帮宁双程全家游，优惠品质好房专享低价～', time: '2025/01/30' },
-        { id: 9, name: '房卡证', icon: '/static/logo.png', lastMessage: '升限额-我想以帮您看一下房子', time: '2024/12/08' }
-      ]
+        { id: 1, name: '拼车群1', icon: '/static/image/group1.png', lastMessage: '我们几点上车？', unreadCount: 7, time: '星期二' },
+        { id: 2, name: '拼车群2', icon: '/static/image/group2.png', lastMessage: '请大家支付一下。', unreadCount: 7, time: '星期二' },
+        { id: 3, name: '拼车群3', icon: '/static/image/group3.png', lastMessage: '当天你还需要购票', unreadCount: 1, time: '星期二' },
+        { id: 4, name: '拼车群4', icon: '/static/image/group4.png', lastMessage: '龙泉广场集合。', unreadCount: 1, time: '星期二' },
+        { id: 5, name: '出租车交通动态', icon: '/static/image/group5.png', lastMessage: '打车-支付成功。', unreadCount: 7, time: '星期五' },
+        { id: 6, name: '拼车群5', icon: '/static/image/group6.png', lastMessage: '还有谁是到北京博物馆的？', time: '2025/02/15' },
+        { id: 7, name: '简单出行服务', icon: '/static/image/group7.png', lastMessage: '帮宁返程火车票优惠订', time: '2025/02/02' },
+        { id: 8, name: '简单酒店', icon: '/static/image/group8.png', lastMessage: '帮宁双程全家游，优惠品质好房专享低价～', time: '2025/01/30' },
+        { id: 9, name: '房卡证', icon: '/static/image/group9.png', lastMessage: '升限额-我想以帮您看一下房子', time: '2024/12/08' },
+		{ id: 10, name: '飞机票', icon: '/static/image/group10.png', lastMessage: '升限额-我想以帮您看一下房子', time: '2024/12/08' },
+		{ id: 11, name: '拼车群6', icon: '/static/image/group11.png', lastMessage: '我想以帮您看一下房子', time: '2024/12/08' },
+		{ id: 12, name: '拼车群7', icon: '/static/image/group12.png', lastMessage: '看一下', time: '2024/12/08' },
+		{ id: 13, name: '', icon: '', lastMessage: '', time: '' },
+		{ id: 14, name: '', icon: '', lastMessage: '', time: '' },
+      ],
     };
   },
   onLoad(options) {
@@ -157,6 +161,7 @@ export default {
   display: flex;
   align-items: center;
   box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  height: 8%;
 }
 
 .back-button {
@@ -186,7 +191,7 @@ export default {
 
 .message-time {
   text-align: center;
-  font-size: 24rpx;
+  font-size: 28rpx;
   color: #999;
   margin-bottom: 10rpx;
 }
@@ -212,7 +217,7 @@ export default {
   padding: 20rpx;
   border-radius: 20rpx;
   background: #fff;
-  font-size: 28rpx;
+  font-size: 32rpx;
   color: #333;
 }
 
@@ -235,7 +240,7 @@ export default {
   padding: 0 20rpx;
   background: #f5f5f5;
   border-radius: 40rpx;
-  font-size: 28rpx;
+  font-size: 32rpx;
 }
 
 .send-button {
@@ -246,7 +251,7 @@ export default {
 }
 
 .send-button text {
-  font-size: 28rpx;
+  font-size: 32rpx;
   color: #fff;
 }
 </style>
