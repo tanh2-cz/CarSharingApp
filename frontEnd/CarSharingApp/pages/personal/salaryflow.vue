@@ -20,7 +20,7 @@
       <view class="flow-item" v-for="(flow, index) in filteredFlows" :key="index" @tap="goToFlowDetail(flow)">
         <text class="flow-date">{{ flow.date }}</text>
         <text class="flow-amount">¥{{ flow.amount }}</text>
-        <text class="flow-type">{{ flow.type }}</text>
+        <text :class="['flow-type', getTypeClass(flow.type)]">{{ flow.type }}</text>
       </view>
     </scroll-view>
   </view>
@@ -51,6 +51,14 @@ export default {
     },
     goToFlowDetail(flow) {
       uni.navigateTo({ url: `/pages/personal/salaryflow/detail?id=${flow.id}` });
+    },
+    getTypeClass(type) {
+      if (type === '拼车收入') {
+        return 'income'; // 拼车收入的类名
+      } else if (type === '提现') {
+        return 'withdrawal'; // 提现的类名
+      }
+      return '';
     }
   }
 };
@@ -115,11 +123,15 @@ export default {
   flex: 1;
   margin-top: 20rpx;
   background: #fff;
+  padding: 20rpx;
 }
 
 .flow-item {
   padding: 30rpx;
-  border-bottom: 1rpx solid #eee;
+  margin-bottom: 20rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 6rpx rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
 }
@@ -128,5 +140,14 @@ export default {
   font-size: 28rpx;
   color: #333;
   margin-bottom: 10rpx;
+}
+
+/* 流水类型颜色区分 */
+.income {
+  color: #4CAF50; /* Green for income */
+}
+
+.withdrawal {
+  color: #2196F3; /* Blue for withdrawal */
 }
 </style>

@@ -24,7 +24,7 @@
       </view>
       <view class="info-item">
         <text class="label">状态</text>
-        <text class="value">{{ order.status }}</text>
+        <text :class="['value', getStatusClass(order.status)]">{{ order.status }}</text>
       </view>
     </view>
   </view>
@@ -48,6 +48,16 @@ export default {
   methods: {
     goBack() {
       uni.navigateBack();
+    },
+    getStatusClass(status) {
+      if (status === '已完成') {
+        return 'completed';
+      } else if (status === '待支付') {
+        return 'pending';
+      } else if (status === '已取消') {
+        return 'cancelled';
+      }
+      return '';
     }
   }
 };
@@ -110,5 +120,18 @@ export default {
 .value {
   font-size: 32rpx;
   color: #333;
+}
+
+/* Order status colors */
+.completed {
+  color: #4CAF50; /* Green for completed */
+}
+
+.pending {
+  color: #FFC107; /* Yellow for pending */
+}
+
+.cancelled {
+  color: #F44336; /* Red for cancelled */
 }
 </style>

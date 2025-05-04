@@ -1,13 +1,8 @@
 <template>
   <view class="personal-container">
-    <!-- 顶部导航栏 -->
-    <!-- <view class="top-bar">
-      <text class="title">我的</text>
-    </view> -->
-
     <!-- 用户信息 -->
     <view class="user-info">
-      <image src="/static/user_avatar.png" class="avatar"></image>
+      <image src="/static/image/user_avatar.jpg" class="avatar"></image>
       <view class="user-details">
         <text class="username">拼车达人</text>
         <text class="level">等级：Lv10</text>
@@ -34,19 +29,19 @@
     <!-- 功能入口 -->
     <view class="menu-list">
       <view class="menu-item" @tap="goToOrders">
-        <image src="/static/icon_orders.png" class="menu-icon"></image>
+        <image src="/static/image/icon_orders.png" class="menu-icon"></image>
         <text class="menu-text">钱包</text>
       </view>
       <view class="menu-item" @tap="goToHistory">
-        <image src="/static/icon_history.png" class="menu-icon"></image>
+        <image src="/static/image/icon_history.png" class="menu-icon"></image>
         <text class="menu-text">历史订单</text>
       </view>
       <view class="menu-item" @tap="goToVerify">
-        <image src="/static/icon_verify.png" class="menu-icon"></image>
+        <image src="/static/image/icon_verify.png" class="menu-icon"></image>
         <text class="menu-text">账号与安全</text>
       </view>
       <view class="menu-item" @tap="goToSalaryFlow">
-        <image src="/static/icon_salary.png" class="menu-icon"></image>
+        <image src="/static/image/icon_salary.png" class="menu-icon"></image>
         <text class="menu-text">工资流水</text>
       </view>
     </view>
@@ -80,32 +75,14 @@ export default {
   background: #f5f5f5;
 }
 
-.top-bar {
-  padding: 20rpx 30rpx;
-  background: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-}
-
-.title {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #333;
-}
-
 .user-info {
   margin-top: 100rpx;
-  padding: 30rpx;
+  padding: 40rpx;
   background: #fff;
   display: flex;
   align-items: center;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
 }
 
 .avatar {
@@ -113,6 +90,7 @@ export default {
   height: 120rpx;
   border-radius: 50%;
   margin-right: 30rpx;
+  border: 2rpx solid #409eff; /* 边框颜色 */
 }
 
 .user-details {
@@ -121,7 +99,7 @@ export default {
 }
 
 .username {
-  font-size: 36rpx;
+  font-size: 38rpx;
   font-weight: bold;
   color: #333;
 }
@@ -137,7 +115,9 @@ export default {
   background: #fff;
   display: flex;
   justify-content: space-around;
-  margin-top: 20rpx;
+  margin-top: 30rpx;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 6rpx rgba(0, 0, 0, 0.1);
 }
 
 .stat-item {
@@ -159,15 +139,22 @@ export default {
 }
 
 .menu-list {
-  margin-top: 20rpx;
+  margin-top: 30rpx;
   background: #fff;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 6rpx rgba(0, 0, 0, 0.1);
 }
 
 .menu-item {
-  padding: 30rpx;
+  padding: 40rpx;
   border-bottom: 1rpx solid #eee;
   display: flex;
   align-items: center;
+  border-radius: 12rpx;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
 }
 
 .menu-icon {

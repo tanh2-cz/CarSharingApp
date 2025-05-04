@@ -24,7 +24,7 @@
       </view>
       <view class="info-item">
         <text class="label">类型</text>
-        <text class="value">{{ flow.type }}</text>
+        <text :class="['value', getTypeClass(flow.type)]">{{ flow.type }}</text>
       </view>
     </view>
   </view>
@@ -48,6 +48,14 @@ export default {
   methods: {
     goBack() {
       uni.navigateBack();
+    },
+    getTypeClass(type) {
+      if (type === '拼车收入') {
+        return 'income'; // 拼车收入的类名
+      } else if (type === '提现') {
+        return 'withdrawal'; // 提现的类名
+      }
+      return '';
     }
   }
 };
@@ -110,5 +118,14 @@ export default {
 .value {
   font-size: 32rpx;
   color: #333;
+}
+
+/* 流水类型颜色 */
+.income {
+  color: #4CAF50; /* Green for income */
+}
+
+.withdrawal {
+  color: #2196F3; /* Blue for withdrawal */
 }
 </style>
