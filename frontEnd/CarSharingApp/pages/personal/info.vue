@@ -58,7 +58,7 @@ export default {
       uni.navigateTo({ url: '/pages/personal/orders' });
     },
     goToVerify() {
-      uni.showToast({ title: '账号与安全功能待实现', icon: 'none' });
+      uni.navigateTo({ url: '/pages/personal/account-security' }); // 实现跳转到账号与安全页面
     },
     goToSalaryFlow() {
       uni.navigateTo({ url: '/pages/personal/salaryflow' });

@@ -76,6 +76,12 @@
 			}
 		},
 		{
+			"path": "pages/personal/account-security",  // **账号与安全页面**
+			"style": {
+			  "navigationBarTitleText": ""
+			}
+		},
+		{
 			// 我的 - 工资流水
 			// 单个订单的卡片
 			// 从上到下也是一张一张卡片啊 按照时间来
