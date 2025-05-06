@@ -3,7 +3,7 @@
     <!-- 顶部导航栏 -->
     <view class="top-bar">
       <view class="back-button" @tap="goBack">
-        <image src="/static/icon_back.png" class="back-icon"></image>
+        <image src="/static/image/icon_back.png" class="back-icon"></image>
       </view>
       <text class="title">流水详情</text>
     </view>
