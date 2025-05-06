@@ -32,31 +32,78 @@
             @tap="toggleFilter"
           ></image>
         </view>
-        <view class="filter-item">
-          <text>出发地</text>
-          <input
-            type="text"
-            v-model="filter.startLocation"
-            placeholder="请输入出发地"
-            class="filter-input"
-          />
+
+        <!-- 修改后的地点选择块 -->
+        <view class="location-block">
+          <text class="location-block-title">起点-目的地</text>
+          <view class="location-inputs">
+            <view class="location-input-group">
+              <text class="location-label">起点</text>
+              <input
+                type="text"
+                v-model="filter.startLocation"
+                placeholder="请输入出发地"
+                class="filter-input"
+              />
+            </view>
+            <text style="color: #999">→</text>
+            <view class="location-input-group">
+              <text class="location-label">终点</text>
+              <input
+                type="text"
+                v-model="filter.endLocation"
+                placeholder="请输入目的地"
+                class="filter-input"
+              />
+            </view>
+          </view>
         </view>
-        <view class="filter-item">
-          <text>目的地</text>
-          <input
-            type="text"
-            v-model="filter.endLocation"
-            placeholder="请输入目的地"
-            class="filter-input"
-          />
-        </view>
+
+        <!-- 修改时间选择部分 -->
         <view class="filter-item">
           <text>出发时间</text>
-          <picker mode="time" :value="filter.time" @change="updateTime">
-            <view class="picker">{{ filter.time || "请选择时间" }}</view>
-          </picker>
+          <view class="time-range">
+            <view class="time-input-group">
+              <text class="time-label">开始时间</text>
+              <picker
+                mode="time"
+                :value="filter.startTime"
+                @change="updateStartTime"
+              >
+                <view class="picker">{{ filter.startTime || "请选择" }}</view>
+              </picker>
+            </view>
+            <text style="color: #999; margin: 0 20rpx">-</text>
+            <view class="time-input-group">
+              <text class="time-label">结束时间</text>
+              <picker
+                mode="time"
+                :value="filter.endTime"
+                @change="updateEndTime"
+              >
+                <view class="picker">{{ filter.endTime || "请选择" }}</view>
+              </picker>
+            </view>
+          </view>
         </view>
-        <!-- 价位 -->
+        <!-- 价格区间选择 -->
+        <view class="filter-item">
+          <text class="section-title">价格区间</text>
+          <view class="price-options">
+            <view
+              v-for="(option, index) in priceRanges"
+              :key="index"
+              :class="[
+                'price-option',
+                filter.priceRange === option.value ? 'active' : '',
+              ]"
+              @tap="selectPriceRange(option.value)"
+            >
+              {{ option.label }}
+            </view>
+          </view>
+        </view>
+
         <button class="apply-btn" @tap="applyFilter">应用筛选</button>
       </view>
     </view>
@@ -111,8 +158,20 @@ export default {
       filter: {
         startLocation: "",
         endLocation: "",
-        time: "",
+        startTime: "", // 修改为开始时间
+        endTime: "", // 添加结束时间
+        priceRange: "", // 添加价格区间选项
       },
+      priceRanges: [
+        { label: "全部", value: "all" },
+        { label: "20¥以下", value: "-20" },
+        { label: "20¥-30¥", value: "20-30" },
+        { label: "30¥-40¥", value: "30-40" },
+        { label: "40¥-50¥", value: "40-50" },
+        { label: "50¥-70¥", value: "50-70" },
+        { label: "70¥-100¥", value: "70-100" },
+        { label: "100¥以上", value: "100-" },
+      ],
       rides: [
         {
           id: 1,
@@ -189,22 +248,16 @@ export default {
     toggleFilter() {
       this.showFilter = !this.showFilter;
     },
-    updateTime(e) {
-      this.filter.time = e.detail.value;
+    updateStartTime(e) {
+      this.filter.startTime = e.detail.value;
     },
-    goToGroupDetails() {
-      // 假设详情页面的路由路径为 /details
-      // uni.showToast({
-      //   title: '查看群聊详细信息待实现',
-      //   icon: 'none'
-      // });
-      // },
-      uni.navigateTo({
-        url: "/pages/groupDetails/index?id=${rides.id}",
-      });
+    updateEndTime(e) {
+      this.filter.endTime = e.detail.value;
+    },
+    selectPriceRange(value) {
+      this.filter.priceRange = value;
     },
     applyFilter() {
-      // 筛选逻辑
       this.filteredRides = this.rides.filter((ride) => {
         const matchStart = this.filter.startLocation
           ? ride.startLocation.includes(this.filter.startLocation)
@@ -212,14 +265,32 @@ export default {
         const matchEnd = this.filter.endLocation
           ? ride.endLocation.includes(this.filter.endLocation)
           : true;
-        const matchTime = this.filter.time
-          ? ride.time === this.filter.time
-          : true;
+
+        // 修改时间匹配逻辑
+        let matchTime = true;
+        if (this.filter.startTime && this.filter.endTime) {
+          const rideTime = ride.time;
+          matchTime =
+            rideTime >= this.filter.startTime &&
+            rideTime <= this.filter.endTime;
+        }
+
+        // 添加价格匹配逻辑
+        let matchPrice = true;
+        if (this.filter.priceRange && this.filter.priceRange !== "all") {
+          const [min, max] = this.filter.priceRange.split("-");
+          if (max === "up") {
+            matchPrice = ride.price >= Number(min);
+          } else {
+            matchPrice = ride.price >= Number(min) && ride.price <= Number(max);
+          }
+        }
+
         const matchQuery = this.searchQuery
           ? ride.startLocation.includes(this.searchQuery) ||
             ride.endLocation.includes(this.searchQuery)
           : true;
-        return matchStart && matchEnd && matchTime && matchQuery;
+        return matchStart && matchEnd && matchTime && matchPrice && matchQuery;
       });
       this.showFilter = false;
     },
@@ -311,19 +382,38 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  background: rgba(0, 0, 0, 0.3); /* 增加透明度 */
+  z-index: 999; /* 降低筛选面板的z-index */
   display: flex;
-  justify-content: flex-start;
+  justify-content: center; /* 改为居中 */
+  align-items: flex-start; /* 从顶部开始 */
 }
 
 .filter-content {
-  width: 70%;
-  height: 100%;
-  background: #fff;
+  width: 90%; /* 调整宽度 */
+  max-height: 80vh; /* 最大高度 */
+  background: rgba(255, 255, 255, 1); /* 半透明背景 */
   padding: 40rpx;
   display: flex;
   flex-direction: column;
+  border-radius: 0 0 20rpx 20rpx; /* 底部圆角 */
+  margin-top: 15%; /* 从顶部开始 */
+  backdrop-filter: blur(10px); /* 背景模糊效果 */
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1); /* 阴影效果 */
+  animation: slideDown 0.3s ease-out; /* 添加动画 */
+  overflow-y: auto; /* 内容过多时可滚动 */
+}
+
+/* 添加滑入动画 */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .filter-header {
@@ -331,11 +421,14 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 40rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.1); /* 添加分隔线 */
 }
 
 .filter-header text {
   font-size: 36rpx;
   font-weight: bold;
+  color: #333;
 }
 
 .close-icon {
@@ -345,6 +438,38 @@ export default {
 
 .filter-item {
   margin-bottom: 40rpx;
+}
+
+/* 添加地点选择块的样式 */
+.location-block {
+  margin-bottom: 40rpx;
+}
+
+.location-block-title {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.location-inputs {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+  padding: 20rpx;
+}
+
+.location-input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.location-label {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 8rpx;
 }
 
 .filter-item text {
@@ -363,10 +488,10 @@ export default {
 }
 
 .apply-btn {
-  background: #409eff;
+  background: #28a745;
   color: #fff;
   font-size: 32rpx;
-  padding: 20rpx;
+  padding: 5rpx 20rpx;
   border-radius: 12rpx;
   margin-top: auto;
   border: none;
@@ -507,5 +632,57 @@ export default {
 
 .status-button:active {
   background-color: #ffaa7f; /* 按下时的深蓝色 */
+}
+
+/* 添加新的样式用于时间选择器 */
+.uni-picker-container {
+  z-index: 1002 !important; /* 确保时间选择器显示在最上层 */
+}
+
+.time-range {
+  display: flex;
+  align-items: center;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+  padding: 20rpx;
+}
+
+.time-input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.time-label {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 8rpx;
+}
+
+.price-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  margin-top: 10rpx;
+}
+
+.price-option {
+  padding: 15rpx 25rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: #666;
+  transition: all 0.3s ease;
+}
+
+.price-option.active {
+  background: #28a745;
+  color: #fff;
+}
+
+.section-title {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 20rpx;
 }
 </style>
