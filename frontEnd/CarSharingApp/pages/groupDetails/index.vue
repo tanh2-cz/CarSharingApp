@@ -149,6 +149,26 @@
       </view>
     </view>
   </view>
+
+  <view class="member-list-popup" v-if="showMemberList" @tap="hideMemberList">
+    <view class="member-list-content" @tap.stop>
+      <view class="member-list-header">
+        <text class="close-btn" @tap="hideMemberList">×</text>
+        <text class="header-title">群成员列表</text>
+      </view>
+      <scroll-view scroll-y class="member-list">
+        <view
+          class="member-list-item"
+          v-for="(member, index) in groupMembers"
+          :key="index"
+        >
+          <image :src="member.avatar" class="member-list-avatar"></image>
+          <text class="member-list-name">{{ member.name }}</text>
+          <text class="member-role" v-if="index === 0">群主</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
 </template>
 
 <script>
@@ -156,10 +176,9 @@ export default {
   data() {
     return {
       rideId: {},
-      isJoined: false, // 添加加群状态
-      isPaid: false, // 添加支付状态
-      // 群聊信息，从拼车界面传递过来，但是其实在chat里面应该群聊也可以查看，所以就是只要是一个群聊，都可以进一步查看这个群聊的详细信息
-      // 可以搞一个东西判断这个chat是不是群聊 是就可以查看 不是就没有那个按钮 就是一些其他的消息提醒之类的 都放在一起
+      isJoined: false,
+      isPaid: false,
+      showMemberList: false, // Add this line to define showMemberList
       groupMembers: [
         { name: "张三", avatar: "/static/image/person1.png" },
         { name: "李四", avatar: "/static/image/person2.png" },
@@ -248,11 +267,10 @@ export default {
       this.hideFeedback();
     },
     showMoreMembers() {
-      // 处理查看更多成员
-      uni.showToast({
-        title: "查看更多成员功能开发中",
-        icon: "none",
-      });
+      this.showMemberList = true;
+    },
+    hideMemberList() {
+      this.showMemberList = false;
     },
   },
 };
@@ -484,7 +502,7 @@ export default {
 .pay-btn {
   flex: 1;
   font-size: 32rpx;
-  padding: 10rpx 0;
+  padding: 4rpx 6rpx;
   border-radius: 12rpx;
   color: #fff;
   transition: all 0.3s ease;
@@ -502,5 +520,84 @@ export default {
   background: #cccccc !important; /* 已加群/已支付时的灰色 */
   opacity: 0.7;
   cursor: not-allowed;
+}
+</style>
+
+<style scoped>
+.member-list-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.member-list-content {
+  width: 90%;
+  height: 80%;
+  background: #fff;
+  border-radius: 12rpx;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.member-list-header {
+  padding: 30rpx;
+  display: flex;
+  align-items: center;
+  border-bottom: 2rpx solid #eee;
+  position: relative;
+}
+
+.header-title {
+  flex: 1;
+  text-align: center;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.close-btn {
+  position: absolute;
+  left: 30rpx;
+  font-size: 40rpx;
+  color: #999;
+}
+
+.member-list {
+  flex: 1;
+  padding: 20rpx;
+}
+
+.member-list-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  border-bottom: 2rpx solid #f5f5f5;
+}
+
+.member-list-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.member-list-name {
+  flex: 1;
+  font-size: 32rpx;
+  color: #333;
+}
+
+.member-role {
+  font-size: 30rpx;
+  color: #28a745;
+  margin-right: 10%;
+  /* background-color: #333; */
 }
 </style>

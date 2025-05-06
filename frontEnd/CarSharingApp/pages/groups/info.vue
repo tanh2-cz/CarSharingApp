@@ -3,59 +3,85 @@
     <!-- 顶部导航栏 -->
     <view class="top-bar">
       <text class="title">消息</text>
-	  <view class="search-bar">
-	  		<input type="text" v-model="searchQuery" placeholder="搜索消息" class="search-input" />
-	  		<image src="/static/image/icon_search.png" class="search-icon"></image>
-	  </view>
+      <view class="search-bar">
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="搜索消息"
+          class="search-input"
+        />
+        <image src="/static/image/icon_search.png" class="search-icon"></image>
+      </view>
       <view class="action-buttons">
-        <image src="/static/image/icon_add.png" class="add-icon" @tap="showAddOptions"></image>
+        <image
+          src="/static/image/icon_add.png"
+          class="add-icon"
+          @tap="showAddOptions"
+        ></image>
       </view>
     </view>
 
-	<scroll-view scroll-y class="chat-list" :scroll-with-animation="true">
-	  <movable-area class="movable-area" v-for="(chat, index) in chatList" :key="index">
-	    <movable-view 
-	      class="movable-view" 
-	      direction="horizontal" 
-	      :x="chat.x" 
-	      @change="onChange($event, index)"
-	      @touchend="onTouchEnd(index)"
-	    >
-	      <!-- 主内容 -->
-	      <view class="chat-item" @tap="goToChat(chat)" :style="{animationDelay: `${index * 0.05}s`}">
-	        <view class="chat-icon" v-show="chat.icon">
-	          <image :src="chat.icon" class="icon"></image>
-	          <view class="badge" v-if="chat.unreadCount > 0">{{ chat.unreadCount }}</view>
-	        </view>
-	        <view class="chat-info">
-	          <view class="chat-header">
-	            <text class="chat-name">{{ chat.name }}</text>
-	            <text class="time">{{ formatTime(chat.time) }}</text>
-	          </view>
-	          <text class="message">{{ chat.lastMessage }}</text>
-	        </view>
-	      </view>
-	      
-	      <!-- 右侧操作按钮 -->
-	      <view class="actions" v-show="chat.icon">
-	        <view class="action-btn unread" @tap="unreadChat(index)">标为未读</view>
-	        <view class="action-btn ignore" @tap="ignoreChat(index)">忽略</view>
-	        <view class="action-btn delete" @tap="deleteChat(index)">删除</view>
-	      </view>
-	    </movable-view>
-	  </movable-area>
-	</scroll-view>
+    <scroll-view scroll-y class="chat-list" :scroll-with-animation="true">
+      <movable-area
+        class="movable-area"
+        v-for="(chat, index) in chatList"
+        :key="index"
+      >
+        <movable-view
+          class="movable-view"
+          direction="horizontal"
+          :x="chat.x"
+          @change="onChange($event, index)"
+          @touchend="onTouchEnd(index)"
+        >
+          <!-- 主内容 -->
+          <view
+            class="chat-item"
+            @tap="goToChat(chat)"
+            :style="{ animationDelay: `${index * 0.05}s` }"
+          >
+            <view class="chat-icon" v-show="chat.icon">
+              <image :src="chat.icon" class="icon"></image>
+              <view class="badge" v-if="chat.unreadCount > 0">{{
+                chat.unreadCount
+              }}</view>
+            </view>
+            <view class="chat-info">
+              <view class="chat-header">
+                <text class="chat-name">{{ chat.name }}</text>
+                <text class="time">{{ formatTime(chat.time) }}</text>
+              </view>
+              <text class="message">{{ chat.lastMessage }}</text>
+            </view>
+          </view>
 
+          <!-- 右侧操作按钮 -->
+          <view class="actions" v-show="chat.icon">
+            <view class="action-btn unread" @tap="unreadChat(index)"
+              >标为未读</view
+            >
+            <view class="action-btn ignore" @tap="ignoreChat(index)">忽略</view>
+            <view class="action-btn delete" @tap="deleteChat(index)">删除</view>
+          </view>
+        </movable-view>
+      </movable-area>
+    </scroll-view>
 
     <!-- 加号弹窗 -->
     <view class="modal" v-if="showAddModal" @tap="closeAddModal">
       <view class="modal-content" @tap.stop>
         <view class="modal-item" @tap="createChat">
-          <image src="/static/image/icon_group_create.png" class="modal-icon"></image>
+          <image
+            src="/static/image/icon_group_create.png"
+            class="modal-icon"
+          ></image>
           <text>新建群聊</text>
         </view>
         <view class="modal-item" @tap="joinChat">
-          <image src="/static/image/icon_group_join.png" class="modal-icon"></image>
+          <image
+            src="/static/image/icon_group_join.png"
+            class="modal-icon"
+          ></image>
           <text>加入群聊</text>
         </view>
         <view class="modal-item cancel" @tap="closeAddModal">
@@ -71,31 +97,108 @@ export default {
   data() {
     return {
       chatList: [
-        { id: 1, name: '拼车群1', icon: '/static/image/group1.png', lastMessage: '我们几点上车？', unreadCount: 7, time: '星期二' },
-        { id: 2, name: '拼车群2', icon: '/static/image/group2.png', lastMessage: '请大家支付一下。', unreadCount: 7, time: '星期二' },
-        { id: 3, name: '拼车群3', icon: '/static/image/group3.png', lastMessage: '当天你还需要购票', unreadCount: 1, time: '星期二' },
-        { id: 4, name: '拼车群4', icon: '/static/image/group4.png', lastMessage: '龙泉广场集合。', unreadCount: 1, time: '星期二' },
-        { id: 5, name: '出租车交通动态', icon: '/static/image/group5.png', lastMessage: '打车-支付成功。', unreadCount: 7, time: '星期五' },
-        { id: 6, name: '拼车群5', icon: '/static/image/group6.png', lastMessage: '还有谁是到北京博物馆的？', time: '2025/02/15' },
-        { id: 7, name: '简单出行服务', icon: '/static/image/group7.png', lastMessage: '帮宁返程火车票优惠订', time: '2025/02/02' },
-        { id: 8, name: '简单酒店', icon: '/static/image/group8.png', lastMessage: '帮宁双程全家游，优惠品质好房专享低价～', time: '2025/01/30' },
-        { id: 9, name: '房卡证', icon: '/static/image/group9.png', lastMessage: '升限额-我想以帮您看一下房子', time: '2024/12/08' },
-		{ id: 10, name: '飞机票', icon: '/static/image/group10.png', lastMessage: '升限额-我想以帮您看一下房子', time: '2024/12/08' },
-		{ id: 11, name: '拼车群6', icon: '/static/image/group11.png', lastMessage: '我想以帮您看一下房子', time: '2024/12/08' },
-		{ id: 12, name: '拼车群7', icon: '/static/image/group12.png', lastMessage: '看一下', time: '2024/12/08' },
-		{ id: 13, name: '', icon: '', lastMessage: '', time: '' },
-		{ id: 14, name: '', icon: '', lastMessage: '', time: '' },
+        {
+          id: 1,
+          name: "拼车群1",
+          icon: "/static/image/group1.png",
+          lastMessage: "我们几点上车？",
+          unreadCount: 7,
+          time: "星期二",
+        },
+        {
+          id: 2,
+          name: "拼车群2",
+          icon: "/static/image/group2.png",
+          lastMessage: "请大家支付一下。",
+          unreadCount: 7,
+          time: "星期二",
+        },
+        {
+          id: 3,
+          name: "拼车群3",
+          icon: "/static/image/group3.png",
+          lastMessage: "当天你还需要购票",
+          unreadCount: 1,
+          time: "星期二",
+        },
+        {
+          id: 4,
+          name: "拼车群4",
+          icon: "/static/image/group4.png",
+          lastMessage: "龙泉广场集合。",
+          unreadCount: 1,
+          time: "星期二",
+        },
+        {
+          id: 5,
+          name: "出租车交通动态",
+          icon: "/static/image/group5.png",
+          lastMessage: "打车-支付成功。",
+          unreadCount: 7,
+          time: "星期五",
+        },
+        {
+          id: 6,
+          name: "拼车群5",
+          icon: "/static/image/group6.png",
+          lastMessage: "还有谁是到北京博物馆的？",
+          time: "2025/02/15",
+        },
+        {
+          id: 7,
+          name: "简单出行服务",
+          icon: "/static/image/group7.png",
+          lastMessage: "帮宁返程火车票优惠订",
+          time: "2025/02/02",
+        },
+        {
+          id: 8,
+          name: "简单酒店",
+          icon: "/static/image/group8.png",
+          lastMessage: "帮宁双程全家游，优惠品质好房专享低价～",
+          time: "2025/01/30",
+        },
+        {
+          id: 9,
+          name: "房卡证",
+          icon: "/static/image/group9.png",
+          lastMessage: "升限额-我想以帮您看一下房子",
+          time: "2024/12/08",
+        },
+        {
+          id: 10,
+          name: "飞机票",
+          icon: "/static/image/group10.png",
+          lastMessage: "升限额-我想以帮您看一下房子",
+          time: "2024/12/08",
+        },
+        {
+          id: 11,
+          name: "拼车群6",
+          icon: "/static/image/group11.png",
+          lastMessage: "我想以帮您看一下房子",
+          time: "2024/12/08",
+        },
+        {
+          id: 12,
+          name: "拼车群7",
+          icon: "/static/image/group12.png",
+          lastMessage: "看一下",
+          time: "2024/12/08",
+        },
+        { id: 13, name: "", icon: "", lastMessage: "", time: "" },
+        { id: 14, name: "", icon: "", lastMessage: "", time: "" },
       ],
       showAddModal: false,
-	  startX: 0 ,// 记录触摸起始位置,
-	  searchQuery: '',
+      startX: 0, // 记录触摸起始位置,
+      searchQuery: "",
     };
   },
   methods: {
     showFilter() {
       uni.showToast({
-        title: '筛选功能待实现',
-        icon: 'none'
+        title: "筛选功能待实现",
+        icon: "none",
       });
     },
     showAddOptions() {
@@ -107,86 +210,86 @@ export default {
     createChat() {
       this.closeAddModal();
       uni.showToast({
-        title: '新建群聊功能待实现',
-        icon: 'none'
+        title: "新建群聊功能待实现",
+        icon: "none",
       });
     },
     joinChat() {
       this.closeAddModal();
       uni.showToast({
-        title: '加入群聊功能待实现',
-        icon: 'none'
+        title: "加入群聊功能待实现",
+        icon: "none",
       });
     },
     goToChat(chat) {
-		chat.unreadCount=0;//unreadCount进去之后就清零了
-		uni.navigateTo({
-			url: `/pages/groups/chat?id=${chat.id}`
-		});
+      chat.unreadCount = 0; //unreadCount进去之后就清零了
+      uni.navigateTo({
+        url: `/pages/groups/chat?id=${chat.id}`,
+      });
     },
-	
+
     formatTime(time) {
       // 这里可以添加更复杂的时间格式化逻辑
       return time;
     },
-	// 滑动事件
-	onChange(e, index) {
-		this.chatList[index].x = e.detail.x;
-	},
+    // 滑动事件
+    onChange(e, index) {
+      this.chatList[index].x = e.detail.x;
+    },
 
-	onTouchEnd(index) {
-	  const threshold = -150; // 滑动阈值
-	  const maxDistance = -300; // 最大滑动距离
-	  
-	  // 如果已经滑动超过阈值，直接显示全部按钮
-	  if (this.chatList[index].x < threshold) {
-		this.chatList[index].x = maxDistance;
-	  } else {
-		this.chatList[index].x = 0; // 恢复原状
-	  }
-	},
+    onTouchEnd(index) {
+      const threshold = -150; // 滑动阈值
+      const maxDistance = -300; // 最大滑动距离
 
-	// 删除聊天
-	deleteChat(index) {
-	uni.showModal({
-	  title: '提示',
-	  content: '确定删除此聊天吗？',
-	  success: (res) => {
-		if (res.confirm) {
-		  this.chatList.splice(index, 1);
-		} else {
-		  this.chatList[index].x = 0; // 恢复原状
-		}
-		this.chatList[index].x = 0;
-	  }
-	});
-	},
+      // 如果已经滑动超过阈值，直接显示全部按钮
+      if (this.chatList[index].x < threshold) {
+        this.chatList[index].x = maxDistance;
+      } else {
+        this.chatList[index].x = 0; // 恢复原状
+      }
+    },
 
-	// 忽略聊天
-	ignoreChat(index) {
-		this.chatList[index].unreadCount = 0;
-		uni.showToast({ title: '已忽略', icon: 'success' });
-		this.chatList[index].x = 0;
-	},
-	//标为未读
-	unreadChat(index) {
-		if(this.chatList[index].unreadCount==0){
-			this.chatList[index].unreadCount = 1;
-			uni.showToast({
-				title:'已标为未读',icon:'success'
-			});
-		}
-		else{
-			uni.showToast({
-				title:'本就为未读-操作无效',icon:'none'
-			});
-		}
+    // 删除聊天
+    deleteChat(index) {
+      uni.showModal({
+        title: "提示",
+        content: "确定删除此聊天吗？",
+        success: (res) => {
+          if (res.confirm) {
+            this.chatList.splice(index, 1);
+          } else {
+            this.chatList[index].x = 0; // 恢复原状
+          }
+          this.chatList[index].x = 0;
+        },
+      });
+    },
 
-		this.chatList[index].x = 0;
-	}
+    // 忽略聊天
+    ignoreChat(index) {
+      this.chatList[index].unreadCount = 0;
+      uni.showToast({ title: "已忽略", icon: "success" });
+      this.chatList[index].x = 0;
+    },
+    //标为未读
+    unreadChat(index) {
+      if (this.chatList[index].unreadCount == 0) {
+        this.chatList[index].unreadCount = 1;
+        uni.showToast({
+          title: "已标为未读",
+          icon: "success",
+        });
+      } else {
+        uni.showToast({
+          title: "本就为未读-操作无效",
+          icon: "none",
+        });
+      }
 
-  }
-}
+      this.chatList[index].x = 0;
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -243,13 +346,15 @@ export default {
   margin-left: 5%;
 }
 
-.filter-icon, .add-icon {
+.filter-icon,
+.add-icon {
   width: 44rpx;
   height: 44rpx;
   transition: var(--transition);
 }
 
-.filter-icon:active, .add-icon:active {
+.filter-icon:active,
+.add-icon:active {
   transform: scale(0.9);
   opacity: 0.8;
 }
@@ -329,7 +434,7 @@ export default {
   flex-direction: column;
   overflow: hidden;
   /* background-color: #28a745; */
-  width:50%;
+  width: 50%;
 }
 
 .chat-header {
@@ -380,8 +485,12 @@ export default {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-content {
@@ -394,8 +503,12 @@ export default {
 }
 
 @keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 .modal-item {
@@ -501,6 +614,6 @@ export default {
   font-size: 30rpx;
   color: #333;
   /* background-color: #28a745; */
-  margin-left:7%;
+  margin-left: 7%;
 }
 </style>

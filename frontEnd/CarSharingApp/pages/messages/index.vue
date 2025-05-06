@@ -245,6 +245,11 @@ export default {
     this.filteredRides = this.rides; // 初始显示所有拼车消息
   },
   methods: {
+    goToGroupDetails(ride) {
+      uni.navigateTo({
+        url: `/pages/groupDetails/index?id=${ride.id}`,
+      });
+    },
     toggleFilter() {
       this.showFilter = !this.showFilter;
     },
