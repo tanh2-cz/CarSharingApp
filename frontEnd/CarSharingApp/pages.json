@@ -47,6 +47,18 @@
 			}
 		},
 		{
+			// 拼车群聊 - 群聊详情界面
+			// 每个群聊的卡片
+			"path": "pages/groupDetails/index",
+			"style": {
+				// "navigationBarTitleText": "群聊详情"
+				"navigationStyle": "custom"
+			},
+			"app-plus": {
+				"titleNView":false
+			}
+		},
+		{
 			// 我的 - 整体界面
 			// 单个功能入口可以弄成组件（可弄可不弄）
 			"path": "pages/personal/info",
@@ -93,7 +105,14 @@
 			"style": {
 				"navigationBarTitleText": ""
 			}
-		}
+		},
+		// {
+		// 	"path" : "pages/messages/group-detail",
+		// 	"style" : 
+		// 	{
+		// 		"navigationBarTitleText" : ""
+		// 	}
+		// }
 	],
 	"tabBar": {
 		"list": [
