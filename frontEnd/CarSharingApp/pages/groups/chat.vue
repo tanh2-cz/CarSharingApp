@@ -93,7 +93,7 @@ export default {
           time: '2025-04-29 10:05',
           showTime: false,
           isSelf: true,
-          avatar: '/static/user_avatar.png' // 自己的头像
+          avatar: '/static/image/user_avatar.jpg' // 自己的头像
         },
         {
           id: 3,
@@ -125,7 +125,7 @@ export default {
         time: this.formatTime(new Date()),
         showTime: true,
         isSelf: true,
-        avatar: '/static/user_avatar.png'
+        avatar: '/static/image/user_avatar.jpg'
       };
       this.messages.push(newMessage);
       this.inputMessage = '';

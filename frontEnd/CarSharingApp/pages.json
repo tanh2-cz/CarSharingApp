@@ -84,7 +84,8 @@
 			// 搜索框和过滤条件可以复用 ?
 			"path": "pages/personal/orders",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{
@@ -93,7 +94,15 @@
 			// 搜索框和过滤条件可以复用 ?
 			"path": "pages/personal/orders/detail",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/personal/account-security",  // **账号与安全页面**
+			"style": {
+			  "navigationBarTitleText": "",
+			  "navigationStyle": "custom"
 			}
 		},
 		{
@@ -104,7 +113,8 @@
 			// 按时间筛选的组件 —— 详见第二次开会文档 类比微信的零钱流水相关组件
 			"path": "pages/personal/salaryflow",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{
@@ -112,7 +122,8 @@
 			// 放一个展示表单的组件 类比微信的展示
 			"path": "pages/personal/salaryflow/detail",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		}
 	],
