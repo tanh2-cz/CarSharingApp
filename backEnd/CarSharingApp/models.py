@@ -75,7 +75,7 @@ class Wallet(db.Model):
     is_alipay_bound = db.Column(db.Boolean, default=False)  # 是否绑定了支付宝支付
 
     # 关联关系
-    user = db.relationship('User', backref='wallet', uselist=False, lazy=True)
+    # user = db.relationship('User', backref='wallet', uselist=False, lazy=True)
 
 
 # 支付交易记录表 (transactions)

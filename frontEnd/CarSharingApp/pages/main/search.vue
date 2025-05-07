@@ -78,6 +78,8 @@ export default {
     onLoad(options) {
         this.searchType = options.searchType || 'startPoint';
         this.placeholderText = this.searchType === 'startPoint' ? '请输入起点' : '请输入终点';
+		const app = getApp();
+		this.api_key = app.globalData.api_key;
     },
     methods: {
         // 点击取消按钮返回首页
@@ -105,7 +107,7 @@ export default {
             const query = this.searchQuery.trim();
             if (!query) return;
 
-            const geocodeUrl = `https://restapi.amap.com/v3/geocode/geo?key=81708c4f856b6a0c5722ae083d93afa6&address=${encodeURIComponent(query)}`;
+            const geocodeUrl = `https://restapi.amap.com/v3/geocode/geo?key=${this.api_key}&address=${encodeURIComponent(query)}`;
 
             uni.request({
                 url: geocodeUrl,

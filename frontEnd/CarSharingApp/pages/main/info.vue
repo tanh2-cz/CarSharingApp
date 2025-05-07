@@ -93,14 +93,15 @@
 		data() {
 			return {
 
-				isRiding: true, // 是否开始行车,用于切换首页状态！！！！！
-
+				isRiding: false, // 是否开始行车,用于切换首页状态！！！！！
+				api_key: '',     // 高德地图 api 放在全局数据中方便管理
 				longitude: 121.506269,
 				latitude: 31.281904,
 				markers: [],
 				polyline: [],
 				scale: 13,
 				startPoint: '同济大学四平路校区',
+				// TODO: 
 				startLngLat: [121.506269, 31.281904], // 初始起点经纬度
 				endPoint: '', // 初始终点
 				endLngLat: null, // 初始终点经纬度
@@ -122,6 +123,8 @@
 			};
 		},
 		onReady() {
+			const app = getApp();
+			this.api_key = app.globalData.api_key;
 			if (this.isRiding === true) {
 				this.planRouteWithCoordinates(); // 绘制从当前位置到终点的路线
 			} else {
@@ -197,7 +200,7 @@
 			geocodeAddress(address) {
 				return new Promise((resolve, reject) => {
 					const geocodeUrl =
-						`https://restapi.amap.com/v3/geocode/geo?key=81708c4f856b6a0c5722ae083d93afa6&address=${encodeURIComponent(address)}`;
+						`https://restapi.amap.com/v3/geocode/geo?key=${this.api_key}&address=${encodeURIComponent(address)}`;
 
 					uni.request({
 						url: geocodeUrl,

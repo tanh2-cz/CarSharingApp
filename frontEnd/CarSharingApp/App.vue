@@ -17,7 +17,8 @@
 		},
 		// 全局变量, 这个属性名称只能为 globalData
 		globalData: {
-			base_url: 'http://localhost:8088',
+			base_url: 'http://localhost:5555', // 端口改成了 5555
+			api_key: '81708c4f856b6a0c5722ae083d93afa6'
 		}
 	}
 </script>

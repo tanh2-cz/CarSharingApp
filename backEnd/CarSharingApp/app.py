@@ -2,7 +2,7 @@ from flask import Flask, session, request, jsonify
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from exts import db, cors
-from flask_migrate import Migrate
+from flask_migrate import Migrate # 迁移 确保热更新 而不需要手动删除数据库
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import class_mapper
 from models import User, ChatGroup, GroupMember, ChatMessage, Wallet, Transaction, Order
@@ -17,9 +17,13 @@ app = Flask(__name__)
 
 app.config.from_object(config)#绑定配置文件
 db.init_app(app)#数据库初始化
-Migrate = Migrate(app,db)
-cors.init_app(app, supports_credentials=True)#跨域请求伪造
+migrate = Migrate(app,db)
+cors.init_app(app, resources={r"/*": {"origins": "http://localhost:8080"}}, supports_credentials=True)#跨域请求伪造
 
+# 根路由
+@app.route('/')
+def index():
+    return "Flask backend is running!", 200
 
 """
 以下为数据表统一增删改查
@@ -159,14 +163,14 @@ def user_signup():
     data = request.get_json()
 
     # 检查必填字段是否完整
-    required_fields = ['nickname', 'phone_number', 'password_login']
+    required_fields = ['nickname', 'phone', 'password']
     for field in required_fields:
         if field not in data or not data[field]:
             return jsonify({'error': f'{field} 不能为空！'}), 400
 
     nickname = data['nickname']
-    phone_number = data['phone_number']
-    password_login = data['password_login']
+    phone_number = data['phone']
+    password_login = data['password']
 
     if User.query.filter_by(nickname=nickname).first():
         return jsonify({'error': '昵称已被使用！'}), 403
@@ -204,6 +208,7 @@ def user_login():
     password_login = data['password_login']
 
     user = User.query.filter_by(phone_number=phone_number).first()
+
     if not user:
         return jsonify({'error': '用户不存在！'}), 403
 
@@ -223,4 +228,7 @@ def user_logout():
 
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=5000, debug=True)
+    with app.app_context():
+        # 后端启动时创建所有表
+        db.create_all()
+    app.run(host='localhost', port=config.BACKEND_PORT, debug=True)
