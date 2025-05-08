@@ -44,11 +44,17 @@
         <image src="/static/image/icon_salary.png" class="menu-icon"></image>
         <text class="menu-text">工资流水</text>
       </view>
+	  <view class="menu-item" @tap="handleLogout">
+	    <image src="/static/image/icon_salary.png" class="menu-icon"></image>
+	    <text class="menu-text">登出</text>
+	  </view>
     </view>
   </view>
 </template>
 
 <script>
+import logout from '@/utils/api/logout';
+
 export default {
   methods: {
     goToOrders() {
@@ -62,7 +68,24 @@ export default {
     },
     goToSalaryFlow() {
       uni.navigateTo({ url: '/pages/personal/salaryflow' });
-    }
+    },
+	handleLogout() {
+		logout({}).then((res) => {
+			uni.showToast({
+				title: '已登出',
+				icon: 'none'
+			})
+			uni.navigateTo({
+				url: '/pages/login/login'
+			})
+		}).catch((err) => {
+			uni.showToast({
+				title: '登出失败',
+				icon: 'none'
+			})
+			console.log(err);
+		})
+	}
   }
 };
 </script>

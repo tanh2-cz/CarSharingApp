@@ -1,7 +1,7 @@
 from flask import Flask, session, request, jsonify
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from exts import db, cors
+from exts import db
 from flask_migrate import Migrate # 迁移 确保热更新 而不需要手动删除数据库
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import class_mapper
@@ -18,12 +18,33 @@ app = Flask(__name__)
 app.config.from_object(config)#绑定配置文件
 db.init_app(app)#数据库初始化
 migrate = Migrate(app,db)
-cors.init_app(app, resources={r"/*": {"origins": "http://localhost:8080"}}, supports_credentials=True)#跨域请求伪造
+
+# cors.init_app(app, resources={r"/*": {"origins": "http://192.168.3.55:8080"}}, supports_credentials=True)#跨域请求伪造
+
+from flask_cors import CORS
+CORS(app) # 跨域请求伪造
 
 # 根路由
 @app.route('/')
 def index():
     return "Flask backend is running!", 200
+
+# 统一响应封装
+def success(data=None, msg="操作成功"):
+    """成功响应"""
+    return jsonify({
+        "code": 200,
+        "msg": msg,
+        "data": data or {}
+    }), 200
+
+def error(code, msg, http_status=400):
+    """错误响应"""
+    return jsonify({
+        "code": code,
+        "msg": msg,
+        "data": None
+    }), http_status
 
 """
 以下为数据表统一增删改查
@@ -166,17 +187,17 @@ def user_signup():
     required_fields = ['nickname', 'phone', 'password']
     for field in required_fields:
         if field not in data or not data[field]:
-            return jsonify({'error': f'{field} 不能为空！'}), 400
+            return error(code=403, msg=f'{field} 不能为空！') # 统一 403 一刀切处理
 
     nickname = data['nickname']
     phone_number = data['phone']
     password_login = data['password']
 
     if User.query.filter_by(nickname=nickname).first():
-        return jsonify({'error': '昵称已被使用！'}), 403
+        return error(code=403, msg='昵称已被使用！')
 
     if User.query.filter_by(phone_number=phone_number).first():
-        return jsonify({'error': '手机号已被注册！'}), 403
+        return error(code=403, msg='手机号已被注册！')
 
 
     hashed_password = generate_password_hash(password_login)# 生成密码哈希值
@@ -190,7 +211,7 @@ def user_signup():
 
     db.session.add(new_user)
     db.session.commit()
-    return jsonify({'message': '注册成功！'}), 201
+    return success(msg='注册成功！')
 
 
 # 用户登录接口
@@ -199,32 +220,33 @@ def user_login():
     data = request.get_json()
 
     # 检查必填字段是否完整
-    required_fields = ['phone_number', 'password_login']
+    required_fields = ['username', 'password']
     for field in required_fields:
         if field not in data or not data[field]:
-            return jsonify({'error': f'{field} 不能为空！'}), 400
+            return error(msg=f'{field} 不能为空！', code=400)
 
-    phone_number = data['phone_number']
-    password_login = data['password_login']
+    nickname = data['username']
+    password = data['password']
 
-    user = User.query.filter_by(phone_number=phone_number).first()
+    user = User.query.filter_by(nickname=nickname).first()
 
     if not user:
-        return jsonify({'error': '用户不存在！'}), 403
+        return error(msg='用户不存在！', code=403)
 
-    if not check_password_hash(user.password_login, password_login):
-        return jsonify({'error': '密码错误！'}), 403
+    if not check_password_hash(user.password_login, password):
+        return error(msg='密码错误！', code=403)
 
     session['user_id'] = user.user_id    # 将用户 ID 存入 session
 
-    return jsonify({'user_id': user.user_id}), 200    # 返回用户 ID
+    return success(data={'user_id': user.user_id}, msg=f'用户{user.user_id}已登录!')    # 返回用户 ID
 
 
 # 用户登出接口
 @app.route('/logout', methods=['POST'])
 def user_logout():
+    # TODO: 多个用户怎么办？
     session.pop('user_id', None)  # 清除 session 中的 user_id
-    return jsonify({'message': '登出成功！'}), 200
+    return success(msg='登出成功！')
 
 
 if __name__ == '__main__':

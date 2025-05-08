@@ -1,7 +1,7 @@
 // 全局请求封装
 
 // 请求超出时间
-const timeout = 5000
+const timeout = 2000000
 
 const defaultHeaders = {
   "Content - Type": "application/json"
@@ -21,6 +21,7 @@ export default (params) => {
 			}).join('&');
 			url += `?${queryString}`;
 		}
+		console.log('sss', url);
 		uni.request({
 			url: url,
 			method: params.method || "get",
@@ -32,11 +33,13 @@ export default (params) => {
 			sslVerify:false,
 			success(response) {
 				// 根据返回的状态码做出对应的操作
+				console.log(response)
 				if (response.statusCode === 200) {
 					if(response.data.code===200){
 						resolve(response.data);
 					}
 					else{
+						console.log('aaaa????')
 						reject(response.data.msg);
 					}
 					

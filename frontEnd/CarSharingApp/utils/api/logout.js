@@ -1,11 +1,11 @@
 // 引入 request 文件
 import request from '../request.js'
 
-// 登录接口
+// 登出接口
 export default (params) => { // 默认导出 export default
-	console.log(params);
+	// console.log(调试信息, 例如传入的参数);
 	return request({
-		url: '/signup',
+		url: '/logout',
 		method: 'post', // post get put delete
 		queryParams: {
 			...params.queryParams
@@ -13,7 +13,6 @@ export default (params) => { // 默认导出 export default
 		data: params.data,
 		header: {
 			"Content-Type": 'application/json', // 内容格式 一般取值为 json 或者 表单
-			'Access-Control-Allow-Origin': '*'
 		},
 	})
 }

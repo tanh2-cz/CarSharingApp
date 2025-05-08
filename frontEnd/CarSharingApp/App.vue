@@ -17,7 +17,8 @@
 		},
 		// 全局变量, 这个属性名称只能为 globalData
 		globalData: {
-			base_url: 'http://localhost:5555', // 端口改成了 5555
+			// base url 一定是 10.0.2.2 表示在模拟器看来 主机的代理 ip 地址
+			base_url: 'http://10.0.2.2:5555', // 端口改成了 5555
 			api_key: '81708c4f856b6a0c5722ae083d93afa6'
 		}
 	}
