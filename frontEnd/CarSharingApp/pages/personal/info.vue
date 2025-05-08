@@ -43,7 +43,7 @@
       <view class="menu-item" @tap="goToSalaryFlow">
         <image src="/static/image/icon_salary.png" class="menu-icon"></image>
         <text class="menu-text">工资流水</text>
-      </view>
+    </view>
     </view>
   </view>
 </template>
