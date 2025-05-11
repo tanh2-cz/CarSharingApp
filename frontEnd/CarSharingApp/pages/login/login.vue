@@ -60,29 +60,29 @@ export default {
 		},
 		handleLogin() {
 			// 直接跳转
-			// uni.switchTab({
-			// 	url: '/pages/main/info'
-			// })
+			uni.switchTab({
+				url: '/pages/main/info'
+			})
 			// uni.showToast({
 			//   title: '登录功能待实现',
 			//   icon: 'none'
 			// })
-			console.log('登录:', this.loginForm);
-			login({ data: this.loginForm }).then((res) => {
-				uni.showToast({
-					title: '登录成功',
-					icon: 'none'
-				})
-				uni.switchTab({
-					url: '/pages/main/info'
-				})
-			}).catch((err) => {
-				uni.showToast({
-					title: '登录失败',
-					icon: 'none'
-				})
-				console.log(err);
-			})
+			// console.log('登录:', this.loginForm);
+			// login({ data: this.loginForm }).then((res) => {
+			// 	uni.showToast({
+			// 		title: '登录成功',
+			// 		icon: 'none'
+			// 	})
+			// 	uni.switchTab({
+			// 		url: '/pages/main/info'
+			// 	})
+			// }).catch((err) => {
+			// 	uni.showToast({
+			// 		title: '登录失败',
+			// 		icon: 'none'
+			// 	})
+			// 	console.log(err);
+			// })
 		},
 		handleRegister() {
 			// uni.showToast({

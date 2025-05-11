@@ -79,6 +79,22 @@
 			}
 		},
 		{
+			// 我的 - 钱包
+			"path": "pages/personal/wallet",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			// 我的 - 钱包 -零钱
+			"path": "pages/personal/pocketmoney",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			// 我的 - 所有订单
 			// 单个订单的卡片
 			// 搜索框和过滤条件可以复用 ?

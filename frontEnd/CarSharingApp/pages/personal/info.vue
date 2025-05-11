@@ -28,7 +28,7 @@
 
     <!-- 功能入口 -->
     <view class="menu-list">
-      <view class="menu-item" @tap="goToOrders">
+      <view class="menu-item" @tap="goToWallet">
         <image src="/static/image/icon_orders.png" class="menu-icon"></image>
         <text class="menu-text">钱包</text>
       </view>
@@ -57,8 +57,8 @@ import logout from '@/utils/api/logout';
 
 export default {
   methods: {
-    goToOrders() {
-      uni.navigateTo({ url: '/pages/personal/orders' });
+    goToWallet() {
+      uni.navigateTo({ url: '/pages/personal/wallet' });
     },
     goToHistory() {
       uni.navigateTo({ url: '/pages/personal/orders' });
