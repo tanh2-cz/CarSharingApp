@@ -8,21 +8,35 @@
       <text class="title">流水详情</text>
     </view>
 
-    <!-- 流水信息 -->
-    <view class="flow-info">
-      <view class="info-item">
-        <text class="label">流水ID</text>
-        <text class="value">{{ flow.id }}</text>
-      </view>
-      <view class="info-item">
+ <!-- 关键信息展示区 -->
+    <view class="key-info-section">
+      <!-- 根据流水类型显示不同的头像 -->
+      <image 
+        v-if="flow.type === '拼车收入'" 
+        src="/static/image/car_income_avatar.png" 
+        class="flow-avatar" 
+      />
+      <image 
+        v-if="flow.type === '提现'" 
+        src="/static/image/withdraw_avatar.png" 
+        class="flow-avatar" 
+      />
+
+      <text class="amount-bold">¥{{ flow.amount }}</text>
+      <text class="flow-id">流水ID: {{ flow.id }}</text>
+    </view>
+
+    <!-- 流水详情 -->
+    <view class="flow-details">
+      <view class="detail-item">
         <text class="label">日期</text>
         <text class="value">{{ flow.date }}</text>
       </view>
-      <view class="info-item">
+      <view class="detail-item">
         <text class="label">金额</text>
         <text class="value">¥{{ flow.amount }}</text>
       </view>
-      <view class="info-item">
+      <view class="detail-item">
         <text class="label">类型</text>
         <text :class="['value', getTypeClass(flow.type)]">{{ flow.type }}</text>
       </view>
@@ -39,9 +53,36 @@ export default {
   },
   onLoad(options) {
     const flows = [
-      { id: '2001', date: '2025-04-29', amount: 100, type: '拼车收入' },
-      { id: '2002', date: '2025-04-28', amount: 80, type: '拼车收入' },
-      { id: '2003', date: '2025-04-27', amount: 50, type: '提现' }
+      { id: '2001', date: '2025-01-05', amount: 120, type: '拼车收入' },
+      { id: '2002', date: '2025-01-18', amount: 90, type: '拼车收入' },
+      { id: '2003', date: '2025-01-20', amount: 60, type: '提现' },
+      { id: '2004', date: '2025-02-03', amount: 150, type: '拼车收入' },
+      { id: '2005', date: '2025-02-17', amount: 100, type: '提现' },
+      { id: '2006', date: '2025-02-28', amount: 130, type: '拼车收入' },
+      { id: '2007', date: '2025-03-05', amount: 160, type: '拼车收入' },
+      { id: '2008', date: '2025-03-15', amount: 95, type: '提现' },
+      { id: '2009', date: '2025-03-22', amount: 80, type: '拼车收入' },
+      { id: '2010', date: '2025-04-02', amount: 200, type: '拼车收入' },
+      { id: '2011', date: '2025-04-14', amount: 110, type: '拼车收入' },
+      { id: '2012', date: '2025-04-20', amount: 90, type: '提现' },
+      { id: '2013', date: '2025-05-01', amount: 300, type: '拼车收入' },
+      { id: '2014', date: '2025-05-10', amount: 60, type: '拼车收入' },
+      { id: '2015', date: '2025-05-22', amount: 100, type: '提现' },
+      { id: '2016', date: '2025-06-03', amount: 180, type: '拼车收入' },
+      { id: '2017', date: '2025-06-17', amount: 70, type: '提现' },
+      { id: '2018', date: '2025-06-29', amount: 150, type: '拼车收入' },
+      { id: '2019', date: '2025-07-08', amount: 220, type: '拼车收入' },
+      { id: '2020', date: '2025-07-19', amount: 50, type: '提现' },
+      { id: '2021', date: '2025-08-02', amount: 140, type: '拼车收入' },
+      { id: '2022', date: '2025-08-18', amount: 100, type: '拼车收入' },
+      { id: '2023', date: '2025-08-28', amount: 60, type: '提现' },
+      { id: '2024', date: '2025-09-04', amount: 175, type: '拼车收入' },
+      { id: '2025', date: '2025-09-21', amount: 90, type: '拼车收入' },
+      { id: '2026', date: '2025-10-10', amount: 200, type: '拼车收入' },
+      { id: '2027', date: '2025-10-18', amount: 80, type: '提现' },
+      { id: '2028', date: '2025-11-11', amount: 160, type: '拼车收入' },
+      { id: '2029', date: '2025-11-25', amount: 70, type: '提现' },
+      { id: '2030', date: '2025-12-05', amount: 190, type: '拼车收入' }
     ];
     this.flow = flows.find(flow => flow.id === options.id) || {};
   },
@@ -97,27 +138,65 @@ export default {
   color: #333;
 }
 
-.flow-info {
-  margin-top: 100rpx;
+/* 关键信息展示区 */
+.key-info-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 95rpx;
   padding: 30rpx;
   background: #fff;
 }
 
-.info-item {
+.flow-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  margin-bottom: 40rpx;
+  margin-top: 50rpx;
+}
+
+.amount-bold {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30rpx;
+}
+
+.flow-id {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 30rpx;
+}
+
+/* 流水详情 */
+.flow-details {
+  margin-top: 20rpx;
+  padding: 30rpx;
+  background: #fff;
+}
+
+.detail-item {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   padding: 20rpx 0;
+  border-top: 1rpx solid #eee;
   border-bottom: 1rpx solid #eee;
 }
 
 .label {
-  font-size: 32rpx;
-  color: #666;
+  font-size: 24rpx;
+  color: #999;
+  margin-left: 30rpx;
+  margin-right: 30rpx;
 }
 
 .value {
-  font-size: 32rpx;
+  font-size: 24rpx;
   color: #333;
+  text-align: left;
+  white-space: pre-line;
 }
 
 /* 流水类型颜色 */

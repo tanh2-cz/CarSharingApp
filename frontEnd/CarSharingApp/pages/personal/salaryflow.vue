@@ -8,8 +8,11 @@
       <text class="title">工资流水</text>
     </view>
 
-    <!-- 筛选面板 -->
-    <view v-if="showFilterPanel" class="filter-panel">
+    <!-- 弹窗遮罩层 -->
+    <view v-if="showFilterPanel" class="overlay" @tap="closeFilterPanel"></view>
+
+    <!-- 弹窗筛选面板 -->
+    <view v-if="showFilterPanel" class="filter-popup">
       <image
         src="/static/image/icon_close.png"
         class="filter-close-icon"
@@ -30,8 +33,7 @@
     <!-- 图表区域 -->
     <view class="chart-wrapper">
       <view class="chart-header">
-        <text class="chart-title">收入柱状图</text>
-        <!-- 将筛选按钮和拼车收入按钮并排放置并调整距离 -->
+        <text class="chart-title">流水柱状图</text>
         <view class="chart-actions">
           <view 
             class="chart-toggle-button" 
@@ -64,9 +66,23 @@
       </view>
 
       <view class="flow-item" v-for="(flow, index) in filteredFlows" :key="index" @tap="goToFlowDetail(flow)">
-        <text class="flow-date">{{ flow.date }}</text>
-        <text class="flow-amount">¥{{ flow.amount }}</text>
-        <text :class="['flow-type', getTypeClass(flow.type)]">{{ flow.type }}</text>
+        <view class="order-top-row">
+          <text class="flow-id-bold">流水号 {{ flow.id }}</text>
+        </view>
+        <view class="order-middle-column">
+          <text class="flow-date-gray">{{ flow.date }}</text>
+          <text class="flow-amount-bold">¥{{ flow.amount }}</text>
+          <view class="order-details">
+            <text class="order-details-text">流水详情</text>
+            <image src="/static/image/arrow_right.png" class="order-details-icon" />
+          </view>
+        </view>
+        <view class="order-bottom-row">
+          <view class="flow-type-item">
+            <text class="flow-type-label">流水类型</text>
+            <text class="flow-type-detail" :style="getFlowTypeStyle(flow.type)">{{ flow.type }}</text>
+          </view>
+        </view>
       </view>
     </scroll-view>
   </view>
@@ -194,6 +210,15 @@ export default {
       if (type === '提现') return 'withdrawal';
       return '';
     },
+    getFlowTypeStyle(type) {
+      if (type === '拼车收入') {
+        return { color: '#4CAF50' };  // 绿色
+      } else if (type === '提现') {
+        return { color: '#2196F3' };  // 蓝色
+      } else {
+        return { color: '#000' };  // 默认黑色
+      }
+    },
     prepareChartData() {
       const grouped = {};
 
@@ -211,7 +236,7 @@ export default {
       this.chartData = {
         categories: sortedMonths,
         series: [{
-          name: `${this.incomeType} 月收入`,
+          name: `${this.incomeType} 每月`,
           data: sortedMonths.map(month => grouped[month])
         }]
       };
@@ -263,25 +288,40 @@ export default {
   color: #333;
 }
 
-.filter-panel {
-  position: relative;
+/* 遮罩层样式 */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* 半透明黑色 */
+  z-index: 999;
+}
+
+/* 弹窗样式 */
+.filter-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 使弹窗居中 */
+  width: 100%;  /* 根据需要调整宽度 */
+  max-width: 620rpx; /* 设置最大宽度 */
   background: #fff;
   padding: 30rpx;
-  border-top: 1px solid #eee;
   border-radius: 20rpx;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
-  margin: 20rpx;
-  margin-top: 120rpx;
+  z-index: 1000;
 }
 
 .filter-close-icon {
   position: absolute;
-  top: 20rpx;
-  right: 5rpx;
+  top: 5rpx;
+  right: 0rpx;
   width: 40rpx;
   height: 40rpx;
   opacity: 0.6;
-  z-index: 10;
+  z-index: 1010;
 }
 
 .filter-row {
@@ -354,7 +394,7 @@ export default {
 
 .chart-actions {
   display: flex;
-  gap: 10rpx; /* 调整按钮之间的间距 */
+  gap: 10rpx;
 }
 
 .chart-filter-button {
@@ -381,7 +421,9 @@ export default {
   font-size: 26rpx;
 }
 
+/* 流水列表样式 */
 .flow-list {
+  width: 90%;
   flex: 1;
   margin: 20rpx;
   background: #fff;
@@ -391,27 +433,83 @@ export default {
 }
 
 .flow-item {
-  padding: 30rpx;
-  margin-bottom: 20rpx;
+  padding: 30rpx 50rpx;
+  margin-bottom: 30rpx;
+  margin-right: 0rpx;
   background: #fff;
   border-radius: 12rpx;
-  box-shadow: 0 4rpx 6rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
 }
 
-.flow-date, .flow-amount, .flow-type {
+.order-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.flow-id-bold {
+  font-weight: bold;
   font-size: 28rpx;
+}
+
+.order-middle-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.flow-date-gray {
+  font-size: 22rpx;
+  color: #666;
+}
+
+.flow-amount-bold {
+  font-weight: bold;
+  font-size: 50rpx;
   color: #333;
+  margin-top: 15rpx;
+  margin-bottom: 15rpx;
+}
+
+.order-details {
+  display: flex;
+  align-items: center;
+}
+
+.order-details-text {
+  font-size: 20rpx;
+  color: #666;
+  margin-right: 5rpx;
+}
+
+.order-details-icon {
+  width: 20rpx;
+  height: 20rpx;
+}
+
+.order-bottom-row {
+  display: flex;
+  flex-direction: column;
+  margin-top: 40rpx;
+}
+
+.flow-type-item {
+  display: flex;
   margin-bottom: 10rpx;
 }
 
-.income {
-  color: #4CAF50;
+.flow-type-label {
+  font-size: 20rpx;
+  color: #666;
+  margin-right: 10rpx;
 }
 
-.withdrawal {
-  color: #2196F3;
+.flow-type-detail {
+  font-size: 20rpx;
+  color: #333;
 }
 
 .no-data {
