@@ -7,11 +7,13 @@ PORT = 3306
 # 连接MySQL的用户名
 USERNAME = "root"
 # 连接MySQL的密码
-PASSWORD = "2252930Zj."
+PASSWORD = "20040504"
 # MySQL上创建的数据库名称
 DATABASE = "CarAppDb"
 DB_URI = f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
 SQLALCHEMY_DATABASE_URI = DB_URI
 
-#用于加密 session 的密钥
+BACKEND_PORT = 5555 # 后端端口号 设置成了 5555 防止冲突
+
+# 用于加密 session 的密钥
 SECRET_KEY = os.urandom(24)

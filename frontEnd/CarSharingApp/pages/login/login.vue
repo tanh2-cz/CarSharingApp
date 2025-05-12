@@ -22,10 +22,10 @@
       <!-- 注册表单 -->
       <view class="form" v-if="activeTab === 'register'">
         <view class="input-group">
-          <input type="text" v-model="registerForm.username" placeholder="请输入用户名" class="input" />
+          <input type="text" v-model="registerForm.nickname" placeholder="请输入用户" class="input" />
         </view>
         <view class="input-group">
-          <input type="text" v-model="registerForm.email" placeholder="请输入邮箱" class="input" />
+          <input type="text" v-model="registerForm.phone" placeholder="请输入电话" class="input" />
         </view>
         <view class="input-group">
           <input type="password" v-model="registerForm.password" placeholder="请输入密码" class="input" />
@@ -37,44 +37,74 @@
 </template>
 
 <script>
+import register from '../../utils/api/register';
+import login from '../../utils/api/login';
 export default {
-  data() {
-    return {
-      activeTab: 'login',
-      loginForm: {
-        username: '',
-        password: ''
-      },
-      registerForm: {
-        username: '',
-        email: '',
-        password: ''
-      }
-    }
-  },
-  methods: {
-    switchTab(tab) {
-      this.activeTab = tab
-    },
-    handleLogin() {
-		// 直接跳转
-		uni.switchTab({
-			url: '/pages/main/info'
-		})
-      // uni.showToast({
-      //   title: '登录功能待实现',
-      //   icon: 'none'
-      // })
-      console.log('登录:', this.loginForm)
-    },
-    handleRegister() {
-      uni.showToast({
-        title: '注册功能待实现',
-        icon: 'none'
-      })
-      console.log('注册:', this.registerForm)
-    }
-  }
+	data() {
+		return {
+			activeTab: 'login',
+			loginForm: {
+				username: 'admin',
+				password: '123'
+			},
+			registerForm: {
+				nickname: 'admin',
+				phone: '1234567890',
+				password: '123'
+			}
+		}
+	},
+	methods: {
+		switchTab(tab) {
+			this.activeTab = tab
+		},
+		handleLogin() {
+			// 直接跳转
+			uni.switchTab({
+				url: '/pages/main/info'
+			})
+			// uni.showToast({
+			//   title: '登录功能待实现',
+			//   icon: 'none'
+			// })
+			// console.log('登录:', this.loginForm);
+			// login({ data: this.loginForm }).then((res) => {
+			// 	uni.showToast({
+			// 		title: '登录成功',
+			// 		icon: 'none'
+			// 	})
+			// 	uni.switchTab({
+			// 		url: '/pages/main/info'
+			// 	})
+			// }).catch((err) => {
+			// 	uni.showToast({
+			// 		title: '登录失败',
+			// 		icon: 'none'
+			// 	})
+			// 	console.log(err);
+			// })
+		},
+		handleRegister() {
+			// uni.showToast({
+			//   title: '注册功能待实现',
+			//   icon: 'none'
+			// })
+			console.log('注册:', this.registerForm)
+			register({ data: this.registerForm }).then((res) => {
+				uni.showToast({
+					title: '注册成功',
+					icon: 'none'
+				})
+				switchTab('login');
+			}).catch((err) => {
+				uni.showToast({
+					title: '注册失败',
+					icon: 'none'
+				})
+				console.log(err);
+			})
+		},
+	}
 }
 </script>
 

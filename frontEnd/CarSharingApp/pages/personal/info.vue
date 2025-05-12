@@ -28,7 +28,7 @@
 
     <!-- 功能入口 -->
     <view class="menu-list">
-      <view class="menu-item" @tap="goToOrders">
+      <view class="menu-item" @tap="goToWallet">
         <image src="/static/image/icon_orders.png" class="menu-icon"></image>
         <text class="menu-text">钱包</text>
       </view>
@@ -43,16 +43,22 @@
       <view class="menu-item" @tap="goToSalaryFlow">
         <image src="/static/image/icon_salary.png" class="menu-icon"></image>
         <text class="menu-text">工资流水</text>
-    </view>
+      </view>
+	  <view class="menu-item" @tap="handleLogout">
+	    <image src="/static/image/icon_salary.png" class="menu-icon"></image>
+	    <text class="menu-text">登出</text>
+	  </view>
     </view>
   </view>
 </template>
 
 <script>
+import logout from '@/utils/api/logout';
+
 export default {
   methods: {
-    goToOrders() {
-      uni.navigateTo({ url: '/pages/personal/orders' });
+    goToWallet() {
+      uni.navigateTo({ url: '/pages/personal/wallet' });
     },
     goToHistory() {
       uni.navigateTo({ url: '/pages/personal/orders' });
@@ -62,7 +68,24 @@ export default {
     },
     goToSalaryFlow() {
       uni.navigateTo({ url: '/pages/personal/salaryflow' });
-    }
+    },
+	handleLogout() {
+		logout({}).then((res) => {
+			uni.showToast({
+				title: '已登出',
+				icon: 'none'
+			})
+			uni.navigateTo({
+				url: '/pages/login/login'
+			})
+		}).catch((err) => {
+			uni.showToast({
+				title: '登出失败',
+				icon: 'none'
+			})
+			console.log(err);
+		})
+	}
   }
 };
 </script>

@@ -6,13 +6,14 @@ class User(db.Model):
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    nickname = db.Column(db.String(50), nullable=False)
-    avatar = db.Column(db.String(255))
-    level = db.Column(db.Integer, default=1)
+    username = db.Column(db.String(50), unique=True, nullable=False)  # 用户名
+    nickname = db.Column(db.String(50), nullable=False) # 昵称
+    avatar = db.Column(db.String(255)) # 头像
+    level = db.Column(db.Integer, default=1) # 用户等级
     role = db.Column(db.String(20), nullable=False)  # 司机/乘客
-    credit_score = db.Column(db.Integer, default=100)
-    total_distance = db.Column(db.Float, default=0.0)
-    carpool_count = db.Column(db.Integer, default=0)
+    credit_score = db.Column(db.Integer, default=100) # 信用分
+    total_distance = db.Column(db.Float, default=0.0) # 总行驶里程
+    carpool_count = db.Column(db.Integer, default=0) # 拼车次数
     phone_number = db.Column(db.String(20), unique=True, nullable=False)
     password_login = db.Column(db.String(255), nullable=False)
     password_pay = db.Column(db.String(255))
@@ -24,6 +25,14 @@ class User(db.Model):
     group_members = db.relationship('GroupMember', backref='user', lazy=True)
     messages = db.relationship('ChatMessage', backref='user', lazy=True)
 
+class Notification(db.Model):
+
+    __tablename__ = 'notifications'
+
+    notification_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 # 群聊表 (chat_groups)
 class ChatGroup(db.Model):
@@ -75,7 +84,7 @@ class Wallet(db.Model):
     is_alipay_bound = db.Column(db.Boolean, default=False)  # 是否绑定了支付宝支付
 
     # 关联关系
-    user = db.relationship('User', backref='wallet', uselist=False, lazy=True)
+    # user = db.relationship('User', backref='wallet', uselist=False, lazy=True)
 
 
 # 支付交易记录表 (transactions)

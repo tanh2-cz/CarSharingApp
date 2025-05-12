@@ -18,6 +18,15 @@
 			}
 		},
 		{
+			// 首页地点搜索
+			// 地址输入组件、行程信息显示组件
+			// 搜索框页面集成在这个页面中
+			"path": "pages/main/search",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			// 附近拼车通知 / 邀请
 			// 每条拼车通知信息的卡片组件 输入框组件可以复用
 			// 有筛选条件
@@ -47,6 +56,18 @@
 			}
 		},
 		{
+			// 拼车群聊 - 群聊详情界面
+			// 每个群聊的卡片
+			"path": "pages/groupDetails/index",
+			"style": {
+				// "navigationBarTitleText": "群聊详情"
+				"navigationStyle": "custom"
+			},
+			"app-plus": {
+				"titleNView":false
+			}
+		},
+		{
 			// 我的 - 整体界面
 			// 单个功能入口可以弄成组件（可弄可不弄）
 			"path": "pages/personal/info",
@@ -55,6 +76,22 @@
 			},
 			"app-plus": {
 				"titleNView":false
+			}
+		},
+		{
+			// 我的 - 钱包
+			"path": "pages/personal/wallet",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			// 我的 - 钱包 -零钱
+			"path": "pages/personal/pocketmoney",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{
