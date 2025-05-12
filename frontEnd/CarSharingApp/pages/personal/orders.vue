@@ -16,8 +16,11 @@
 			</view>
 		</view>
 
-		<!-- 筛选面板 -->
-		<view v-if="showFilterPanel" class="filter-panel">
+		<!-- 弹窗遮罩层 -->
+    	<view v-if="showFilterPanel" class="overlay" @tap="closeFilterPanel"></view>
+
+		<!-- 弹窗筛选面板 -->
+		<view v-if="showFilterPanel" class="filter-popup">
 			<!-- 关闭按钮 -->
 			<image src="/static/image/icon_close.png" class="filter-close-icon" @tap="closeFilterPanel" />
 
@@ -267,17 +270,32 @@
 		height: 48rpx;
 	}
 
-	/* 筛选面板 */
-	.filter-panel {
-		position: relative;
-		background: #fff;
-		padding: 30rpx;
-		border-top: 1px solid #eee;
-		border-radius: 20rpx;
-		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
-		margin: 20rpx;
+	/* 遮罩层样式 */
+	.overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5); /* 半透明黑色 */
+	z-index: 999;
 	}
 
+	/* 弹窗样式 */
+	.filter-popup {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%); /* 使弹窗居中 */
+	width: 100%;  /* 根据需要调整宽度 */
+	max-width: 620rpx; /* 设置最大宽度 */
+	background: #fff;
+	padding: 30rpx;
+	border-radius: 20rpx;
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+	z-index: 1000;
+	}
+	
 	.filter-close-icon {
 		position: absolute;
 		top: 20rpx;

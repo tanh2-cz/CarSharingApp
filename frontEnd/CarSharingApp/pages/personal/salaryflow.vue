@@ -44,7 +44,7 @@
             </text>
           </view>
           <view class="chart-filter-button" @tap="showFilter">
-            <text>筛选</text>
+            <image src="/static/image/icon_filter_blue.png" class="filter-icon" />
           </view>
         </view>
       </view>
@@ -299,6 +299,11 @@ export default {
   z-index: 999;
 }
 
+.filter-icon {
+  width: 48rpx;
+  height: 48rpx;
+}
+
 /* 弹窗样式 */
 .filter-popup {
   position: fixed;
@@ -397,10 +402,11 @@ export default {
   gap: 10rpx;
 }
 
-.chart-filter-button {
-  padding: 10rpx 30rpx;
-  background: #409eff;
-  border-radius: 30rpx;
+.chat-filter-button {
+  margin-left: 20rpx;
+  padding: 20rpx;
+  display: flex;
+  align-items: center;
 }
 
 .chart-filter-button text {
