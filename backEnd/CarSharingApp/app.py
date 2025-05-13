@@ -184,17 +184,17 @@ def user_signup():
     data = request.get_json()
 
     # 检查必填字段是否完整
-    required_fields = ['nickname', 'phone', 'password']
+    required_fields = ['username', 'phone', 'password']
     for field in required_fields:
         if field not in data or not data[field]:
             return error(code=403, msg=f'{field} 不能为空！') # 统一 403 一刀切处理
 
-    nickname = data['nickname']
+    username = data['username']
     phone_number = data['phone']
     password_login = data['password']
 
-    if User.query.filter_by(nickname=nickname).first():
-        return error(code=403, msg='昵称已被使用！')
+    if User.query.filter_by(username=username).first():
+        return error(code=403, msg='该用户名已被使用！')
 
     if User.query.filter_by(phone_number=phone_number).first():
         return error(code=403, msg='手机号已被注册！')
@@ -203,7 +203,8 @@ def user_signup():
     hashed_password = generate_password_hash(password_login)# 生成密码哈希值
 
     new_user = User(
-        nickname=nickname,
+        username=username,
+        nickname=username,
         phone_number=phone_number,
         password_login=hashed_password,
         role='乘客'  # 默认角色为乘客
@@ -223,12 +224,13 @@ def user_login():
     required_fields = ['username', 'password']
     for field in required_fields:
         if field not in data or not data[field]:
+            # TODO: 状态码用全局参数
             return error(msg=f'{field} 不能为空！', code=400)
 
-    nickname = data['username']
+    username = data['username']
     password = data['password']
 
-    user = User.query.filter_by(nickname=nickname).first()
+    user = User.query.filter_by(username=username).first()
 
     if not user:
         return error(msg='用户不存在！', code=403)

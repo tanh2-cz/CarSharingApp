@@ -4,8 +4,8 @@
     <view class="overlay"></view>
     <view class="form-container">
       <view class="tabs">
-        <text :class="{ 'tab': true, 'active': activeTab === 'login' }" @tap="switchTab('login')">登录</text>
-        <text :class="{ 'tab': true, 'active': activeTab === 'register' }" @tap="switchTab('register')">注册</text>
+        <text :class="{ 'tab': true, 'active': activeTab === 'login' }" @tap="changeTab('login')">登录</text>
+        <text :class="{ 'tab': true, 'active': activeTab === 'register' }" @tap="changeTab('register')">注册</text>
       </view>
 
       <!-- 登录表单 -->
@@ -22,7 +22,7 @@
       <!-- 注册表单 -->
       <view class="form" v-if="activeTab === 'register'">
         <view class="input-group">
-          <input type="text" v-model="registerForm.nickname" placeholder="请输入用户" class="input" />
+          <input type="text" v-model="registerForm.username" placeholder="请输入用户" class="input" />
         </view>
         <view class="input-group">
           <input type="text" v-model="registerForm.phone" placeholder="请输入电话" class="input" />
@@ -48,14 +48,14 @@ export default {
 				password: '123'
 			},
 			registerForm: {
-				nickname: 'admin',
+				username: 'admin',
 				phone: '1234567890',
 				password: '123'
 			}
 		}
 	},
 	methods: {
-		switchTab(tab) {
+		changeTab(tab) {
 			this.activeTab = tab
 		},
 		handleLogin() {
@@ -68,6 +68,9 @@ export default {
 			//   icon: 'none'
 			// })
 			console.log('登录:', this.loginForm);
+			// uni.switchTab({
+			// 	url: '/pages/main/info'
+			// })
 			login({ data: this.loginForm }).then((res) => {
 				uni.showToast({
 					title: '登录成功',
@@ -83,6 +86,7 @@ export default {
 				})
 				console.log(err);
 			})
+			
 		},
 		handleRegister() {
 			// uni.showToast({
@@ -95,7 +99,7 @@ export default {
 					title: '注册成功',
 					icon: 'none'
 				})
-				switchTab('login');
+				this.changeTab('login');
 			}).catch((err) => {
 				uni.showToast({
 					title: '注册失败',
