@@ -25,8 +25,8 @@
         <input type="date" v-model="endDate" placeholder="例:2025-04-28" />
       </view>
       <view class="filter-actions">
-        <button @tap="applyFilters">应用</button>
-        <button @tap="resetFilters">重置</button>
+        <button class="apply-button" @tap="applyFilters">应用</button>
+        <button class="reset-button" @tap="resetFilters">重置</button>
       </view>
     </view>
 
@@ -356,23 +356,28 @@ export default {
 
 .filter-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-top: 20rpx;
 }
 
-.filter-actions button {
-  flex: 1;
-  margin: 0 10rpx;
-  padding: 16rpx 0;
-  font-size: 26rpx;
-  border-radius: 30rpx;
-  background: #409eff;
+.apply-button,
+.reset-button {
+  padding: 0rpx 30rpx;
+  font-size: 30rpx;
+  border-radius: 24rpx;
   color: #fff;
   border: none;
   box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.08);
+  margin: 0;
 }
 
-.filter-actions button:nth-child(2) {
+
+.apply-button {
+  margin-right: 20rpx;
+  background: #409eff;
+}
+
+.reset-button {
   background: #f56c6c;
 }
 
