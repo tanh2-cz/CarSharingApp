@@ -25,14 +25,19 @@ class User(db.Model):
     group_members = db.relationship('GroupMember', backref='user', lazy=True)
     messages = db.relationship('ChatMessage', backref='user', lazy=True)
 
-class Notification(db.Model):
+class GroupNotification(db.Model):
 
     __tablename__ = 'notifications'
 
     notification_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
-    content = db.Column(db.Text, nullable=False)
+    # user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    group_id = db.Column(db.Integer, db.ForeignKey('chat_groups.group_id'), nullable=False)
+    notification_number = db.Column(db.Integer, nullable=False) # 来一个加群码 
+    content = db.Column(db.Text, nullable=False) # 通知附带的详细信息
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # 通知与群聊关联
+    # group = 可以访问到通知对应的群聊 有外键的表不需要调用 relationship 函数 没有外键的才需要创建一个反向访问的变量 并设置 backref
 
 # 群聊表 (chat_groups)
 class ChatGroup(db.Model):
@@ -46,6 +51,7 @@ class ChatGroup(db.Model):
     # 关联关系
     members = db.relationship('GroupMember', backref='group', lazy=True)
     messages = db.relationship('ChatMessage', backref='group', lazy=True)
+    notification = db.relationship('GroupNotification', backref='group', lazy=True)
 
 
 # 群聊成员表 (group_members)

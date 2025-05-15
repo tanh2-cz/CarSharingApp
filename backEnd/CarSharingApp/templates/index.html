@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask 后台数据管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .modal {
+            display: none;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        /* 自定义滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            border-color: #e2e8f0;
+            /* 更柔和的边框颜色 */
+            transition: all 0.15s ease-in-out;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: #4f46e5;
+            /* indigo-600 */
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn {
+            transition: all 0.15s ease-in-out;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-slate-900 to-slate-800 text-gray-200 p-4 md:p-8 min-h-screen">
+
+    <div class="container mx-auto max-w-7xl bg-slate-800 p-6 sm:p-8 rounded-xl shadow-2xl border border-slate-700">
+        <header class="mb-8 text-center">
+            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
+                数据库管理面板
+            </h1>
+            <p class="text-slate-400 mt-2">可视化管理您的应用数据</p>
+        </header>
+
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+            <div class="flex-grow mb-4 sm:mb-0">
+                <label for="tableSelector" class="block text-sm font-medium text-slate-300 mb-1">选择数据表:</label>
+                <select id="tableSelector"
+                    class="form-select w-full p-3 bg-slate-700 border-slate-600 text-slate-200 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="">--请选择一个表--</option>
+                    <option value="users">用户 (users)</option>
+                    <option value="notifications">群通知 (notifications)</option>
+                    <option value="chat_groups">群聊 (chat_groups)</option>
+                    <option value="group_members">群成员 (group_members)</option>
+                    <option value="chat_messages">聊天记录 (chat_messages)</option>
+                    <option value="wallets">钱包 (wallets)</option>
+                    <option value="transactions">交易记录 (transactions)</option>
+                    <option value="orders">订单 (orders)</option>
+                </select>
+            </div>
+            <button id="loadTableBtn"
+                class="btn w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg">
+                加载数据
+            </button>
+        </div>
+
+        <div id="actionButtons" class="mb-6 hidden">
+            <button id="showAddFormBtn"
+                class="btn bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                        clip-rule="evenodd" />
+                </svg>
+                添加新记录
+            </button>
+        </div>
+
+        <div id="messageArea" class="mb-4 p-3 rounded-lg text-sm transition-opacity duration-300 opacity-0"></div>
+
+        <div id="dataDisplayArea"
+            class="table-responsive bg-slate-700/50 rounded-lg shadow overflow-hidden border border-slate-700">
+            <p class="p-6 text-slate-400">请选择一个数据表并点击 "加载数据" 来查看内容。</p>
+        </div>
+        <div id="paginationControls" class="mt-6 flex justify-center items-center space-x-2 hidden">
+            <button id="prevPageBtn"
+                class="btn bg-slate-600 hover:bg-slate-500 text-slate-200 font-semibold py-2 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">上一页</button>
+            <span id="pageInfo" class="text-slate-300"></span>
+            <button id="nextPageBtn"
+                class="btn bg-slate-600 hover:bg-slate-500 text-slate-200 font-semibold py-2 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">下一页</button>
+        </div>
+    </div>
+
+    <div id="formModal" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div
+            class="bg-slate-800 p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-slate-700">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="formModalTitle" class="text-2xl font-semibold text-indigo-400">表单</h2>
+                <button id="closeModalBtn"
+                    class="text-slate-400 hover:text-slate-200 text-3xl leading-none">&times;</button>
+            </div>
+            <form id="recordForm">
+                <div id="formFieldsContainer" class="space-y-4">
+                </div>
+                <div class="mt-8 flex justify-end space-x-3">
+                    <button type="button" id="cancelModalBtn"
+                        class="btn px-4 py-2 text-sm font-medium text-slate-300 bg-slate-600 hover:bg-slate-500 rounded-lg">取消</button>
+                    <button type="submit" id="submitFormBtn"
+                        class="btn px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- 配置 ---
+        const BASE_URL = 'http://localhost:5555'; // 您的 Flask 后端地址，请确保端口正确
+        let currentTable = '';
+        let currentRecordId = null; // 用于编辑
+        let currentAction = 'add'; // 'add' 或 'edit'
+        let currentPage = 1;
+        let totalPages = 1;
+        const itemsPerPage = 10; // 每页显示条目数，与后端分页逻辑匹配
+
+        // --- 表结构定义 (简化版) ---
+        // 定义表单和显示的字段。`pk` 是主键字段名。
+        // `fields` 用于添加/编辑表单。`displayColumns` 用于表格视图。
+        // `readOnlyFields` 在表单中不可编辑。
+        // `typeOverrides` 可以指定输入类型，例如 'password', 'checkbox', 'textarea', 'number', 'datetime-local'。
+        // `booleanFields` 用于正确处理复选框的 true/false 值。
+        const tableSchemas = {
+            'users': {
+                pk: 'user_id',
+                fields: ['username', 'nickname', 'avatar', 'role', 'phone_number', 'password_login', 'verified', 'level', 'credit_score', 'password_pay'],
+                displayColumns: ['user_id', 'username', 'nickname', 'role', 'phone_number', 'verified', 'level', 'credit_score'],
+                readOnlyFields: ['user_id', 'total_distance', 'carpool_count'], // password_login 仅在添加时可写
+                typeOverrides: { 'password_login': 'password', 'password_pay': 'password', 'verified': 'checkbox', 'level': 'number', 'credit_score': 'number' },
+                booleanFields: ['verified'],
+                fileFields: ['avatar'] // 文件上传字段
+            },
+            'notifications': {
+                pk: 'notification_id',
+                fields: ['group_id', 'notification_number', 'content'],
+                displayColumns: ['notification_id', 'group_id', 'notification_number', 'content', 'created_at'],
+                readOnlyFields: ['notification_id', 'created_at'],
+                typeOverrides: { 'content': 'textarea', 'group_id': 'number', 'notification_number': 'number' }
+            },
+            'chat_groups': {
+                pk: 'group_id',
+                fields: ['order_id', 'group_name'],
+                displayColumns: ['group_id', 'order_id', 'group_name', 'created_at'],
+                readOnlyFields: ['group_id', 'created_at'],
+                typeOverrides: { 'order_id': 'number' }
+            },
+            'group_members': {
+                pk: 'member_id',
+                fields: ['group_id', 'user_id', 'role'],
+                displayColumns: ['member_id', 'group_id', 'user_id', 'role', 'joined_at'],
+                readOnlyFields: ['member_id', 'joined_at'],
+                typeOverrides: { 'group_id': 'number', 'user_id': 'number' }
+            },
+            'chat_messages': {
+                pk: 'message_id',
+                fields: ['group_id', 'user_id', 'message_text'],
+                displayColumns: ['message_id', 'group_id', 'user_id', 'message_text', 'sent_at'],
+                readOnlyFields: ['message_id', 'sent_at'],
+                typeOverrides: { 'message_text': 'textarea', 'group_id': 'number', 'user_id': 'number' }
+            },
+            'wallets': {
+                pk: 'user_id',
+                fields: ['user_id', 'balance', 'wechat_account', 'is_wechat_bound', 'alipay_account', 'is_alipay_bound'],
+                displayColumns: ['user_id', 'balance', 'is_wechat_bound', 'is_alipay_bound'],
+                readOnlyFields: [], // user_id 在添加时是必须的，但对于更新是主键
+                typeOverrides: { 'user_id': 'number', 'balance': 'number', 'is_wechat_bound': 'checkbox', 'is_alipay_bound': 'checkbox' },
+                booleanFields: ['is_wechat_bound', 'is_alipay_bound']
+            },
+            'transactions': {
+                pk: 'transaction_id',
+                fields: ['user_id', 'type', 'amount'],
+                displayColumns: ['transaction_id', 'user_id', 'type', 'amount', 'transaction_time'],
+                readOnlyFields: ['transaction_id', 'transaction_time'],
+                typeOverrides: { 'user_id': 'number', 'amount': 'number' }
+            },
+            'orders': {
+                pk: 'order_id',
+                fields: ['user_id', 'start_location', 'end_location', 'status', 'fare'],
+                displayColumns: ['order_id', 'user_id', 'start_location', 'end_location', 'status', 'fare', 'created_at'],
+                readOnlyFields: ['order_id', 'created_at'],
+                typeOverrides: { 'user_id': 'number', 'fare': 'number' }
+            }
+        };
+
+        // --- DOM 元素 ---
+        const tableSelector = document.getElementById('tableSelector');
+        const loadTableBtn = document.getElementById('loadTableBtn');
+        const dataDisplayArea = document.getElementById('dataDisplayArea');
+        const messageArea = document.getElementById('messageArea');
+        const actionButtonsDiv = document.getElementById('actionButtons');
+        const showAddFormBtn = document.getElementById('showAddFormBtn');
+
+        const formModal = document.getElementById('formModal');
+        const formModalTitle = document.getElementById('formModalTitle');
+        const formFieldsContainer = document.getElementById('formFieldsContainer');
+        const recordForm = document.getElementById('recordForm');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const cancelModalBtn = document.getElementById('cancelModalBtn');
+        const submitFormBtn = document.getElementById('submitFormBtn');
+
+        const paginationControls = document.getElementById('paginationControls');
+        const prevPageBtn = document.getElementById('prevPageBtn');
+        const nextPageBtn = document.getElementById('nextPageBtn');
+        const pageInfo = document.getElementById('pageInfo');
+
+        // --- API 辅助函数 (用于JSON请求) ---
+        async function apiRequestJson(endpoint, method = 'GET', body = null) {
+            const url = `${BASE_URL}${endpoint}`;
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+            try {
+                console.log('sssasffaf', url);
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    let errorData;
+                    try { errorData = await response.json(); } catch (e) {
+                        errorData = { msg: `HTTP 错误 ${response.status} - ${response.statusText}` };
+                    }
+                    throw new Error(errorData.msg || `请求失败，状态码: ${response.status}`);
+                }
+                if (response.status === 204 || response.headers.get("content-length") === "0") { return null; }
+                return await response.json();
+            } catch (error) {
+                console.error('JSON API 请求错误:', error);
+                showMessage(error.message || '网络请求失败', true);
+                throw error;
+            }
+        }
+
+        // --- API 辅助函数 ---
+        async function apiRequest(endpoint, method = 'GET', body = null) {
+            const url = `${BASE_URL}${endpoint}`;
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    let errorData;
+                    try { errorData = await response.json(); } catch (e) {
+                        errorData = { msg: `HTTP 错误 ${response.status} - ${response.statusText}` };
+                    }
+                    throw new Error(errorData.msg || `请求失败，状态码: ${response.status}`);
+                }
+                if (response.status === 204 || response.headers.get("content-length") === "0") { return null; }
+                return await response.json();
+            } catch (error) {
+                console.error('API 请求错误:', error);
+                showMessage(error.message || '网络请求失败', true);
+                throw error;
+            }
+        }
+
+        // --- 消息显示 ---
+        function showMessage(message, isError = false) {
+            messageArea.textContent = message;
+            messageArea.className = `mb-4 p-3 rounded-lg text-sm ${isError ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-green-500/20 text-green-300 border border-green-500/30'} opacity-100`;
+            setTimeout(() => {
+                messageArea.className = messageArea.className.replace('opacity-100', 'opacity-0');
+            }, 5000);
+        }
+
+        // --- 渲染表格 ---
+        function renderTable(data, tableName) {
+            if (!data || !data.items || data.items.length === 0) {
+                dataDisplayArea.innerHTML = `<p class="p-6 text-slate-400">在表 '${tableName}' 中没有找到数据。</p>`;
+                paginationControls.classList.add('hidden');
+                return;
+            }
+
+            const schema = tableSchemas[tableName];
+            const records = data.items;
+            const columns = schema.displayColumns || Object.keys(records[0] || {});
+
+            let tableHTML = `<table class="min-w-full divide-y divide-slate-600">
+                <thead class="bg-slate-700/80">
+                    <tr>`;
+            columns.forEach(col => {
+                tableHTML += `<th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">${col.replace(/_/g, ' ')}</th>`;
+            });
+            tableHTML += `<th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">操作</th>`;
+            tableHTML += `</tr></thead><tbody class="bg-slate-800 divide-y divide-slate-700">`;
+
+            records.forEach(record => {
+                tableHTML += `<tr>`;
+                columns.forEach(col => {
+                    let value = record[col];
+                    // 如果是 avatar 字段，并且有值，尝试显示为图片链接或文件名
+                    if (col === 'avatar' && value) {
+                        // 假设 value 是一个可访问的URL或文件名。如果是文件名，需要配合后端提供完整路径。
+                        // 为简单起见，这里只显示文本，您可以扩展此逻辑以显示图片预览。
+                        value = `<a href="${escapeHtml(String(value))}" target="_blank" class="text-indigo-400 hover:underline" title="点击查看/下载">${escapeHtml(String(value).substring(0, 30))}${String(value).length > 30 ? '...' : ''}</a>`;
+                    } else if (typeof value === 'boolean') {
+                        value = value ? '✔️ (是)' : '❌ (否)';
+                    } else if (value === null || value === undefined) {
+                        value = 'N/A';
+                    } else if (typeof value === 'string' && value.length > 50) {
+                        value = `<span title="${escapeHtml(value)}">${escapeHtml(value.substring(0, 50))}...</span>`;
+                    } else {
+                        value = escapeHtml(String(value));
+                    }
+                    tableHTML += `<td class="px-4 py-3 whitespace-nowrap text-sm text-slate-300">${value}</td>`;
+                });
+                const recordId = record[schema.pk];
+                // console.log('xx', recordId);
+                tableHTML += `<td class="px-4 py-3 whitespace-nowrap text-sm font-medium space-x-2">
+                    <button onclick="handleEditRecord('${tableName}', '${recordId}')" class="text-indigo-400 hover:text-indigo-300 transition duration-150">编辑</button>
+                    <button onclick="handleDeleteRecord('${tableName}', '${recordId}')" class="text-red-400 hover:text-red-300 transition duration-150">删除</button>
+                </td>`;
+                tableHTML += `</tr>`;
+            });
+
+            tableHTML += `</tbody></table>`;
+            dataDisplayArea.innerHTML = tableHTML;
+            actionButtonsDiv.classList.remove('hidden');
+            updatePaginationControls(data.page, data.pages);
+        }
+
+        function escapeHtml(unsafe) {
+            if (unsafe === null || unsafe === undefined) return '';
+            return String(unsafe)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // --- 更新分页控件 ---
+        function updatePaginationControls(page, totalPgs) {
+            currentPage = page;
+            totalPages = totalPgs;
+            if (totalPages > 0) {
+                paginationControls.classList.remove('hidden');
+                pageInfo.textContent = `第 ${currentPage} 页 / 共 ${totalPages} 页`;
+                prevPageBtn.disabled = currentPage <= 1;
+                nextPageBtn.disabled = currentPage >= totalPages;
+            } else {
+                paginationControls.classList.add('hidden');
+            }
+        }
+
+
+        // --- 加载表格数据 ---
+        async function loadTableData(page = 1) {
+            currentTable = tableSelector.value;
+            if (!currentTable) {
+                showMessage('请先选择一个数据表。', true);
+                dataDisplayArea.innerHTML = '<p class="p-6 text-slate-400">请选择一个数据表并点击 "加载数据" 来查看内容。</p>';
+                actionButtonsDiv.classList.add('hidden');
+                paginationControls.classList.add('hidden');
+                return;
+            }
+            dataDisplayArea.innerHTML = '<p class="p-6 text-slate-400">正在加载数据...</p>';
+            try {
+                // GET 默认参数没有写
+                const data = await apiRequest(`/query?table_name=${currentTable}&page=${page}&per_page=${itemsPerPage}`);
+                console.log(data);
+                if (data && data.code === 200) {
+                    renderTable(data.data, currentTable);
+                } else {
+                    throw new Error(data.msg || "加载数据失败");
+                }
+            } catch (error) {
+                dataDisplayArea.innerHTML = `<p class="p-6 text-red-400">加载数据失败: ${error.message}</p>`;
+                actionButtonsDiv.classList.add('hidden');
+                paginationControls.classList.add('hidden');
+            }
+        }
+
+        // --- 表单处理 ---
+        function openModal(action, tableName, record = null) {
+            currentAction = action;
+            currentTable = tableName;
+            formModalTitle.textContent = action === 'add' ? `添加到 ${tableName}` : `编辑 ${tableName} 记录`;
+
+            formFieldsContainer.innerHTML = '';
+            const schema = tableSchemas[tableName];
+            if (!schema) {
+                showMessage(`表 '${tableName}' 的结构定义未找到!`, true);
+                return;
+            }
+
+            schema.fields.forEach(field => {
+                const isPkField = field === schema.pk;
+                const isReadOnlyInSchema = schema.readOnlyFields && schema.readOnlyFields.includes(field);
+                const isFileField = schema.fileFields && schema.fileFields.includes(field);
+
+                if (action === 'edit' && (isPkField || (isReadOnlyInSchema && !isFileField))) { // 只读字段（非文件）在编辑时显示为只读文本
+                    if (record && record.hasOwnProperty(field)) {
+                        const fieldDiv = document.createElement('div');
+                        fieldDiv.innerHTML = `
+                            <label for="field-${field}" class="block text-sm font-medium text-slate-300 capitalize">${field.replace(/_/g, ' ')}:</label>
+                            <input type="text" id="field-${field}" name="${field}" value="${record[field] !== null && record[field] !== undefined ? escapeHtml(record[field]) : ''}"
+                                class="form-input mt-1 block w-full p-2 bg-slate-600 border-slate-500 text-slate-300 rounded-md shadow-sm cursor-not-allowed" readonly>
+                        `;
+                        formFieldsContainer.appendChild(fieldDiv);
+                    }
+                    return;
+                }
+                if (action === 'add' && isPkField && isReadOnlyInSchema) {
+                    return;
+                }
+
+                const fieldDiv = document.createElement('div');
+                const label = document.createElement('label');
+                label.htmlFor = `field-${field}`;
+                label.className = "block text-sm font-medium text-slate-300 capitalize";
+                label.textContent = `${field.replace(/_/g, ' ')}:`;
+                fieldDiv.appendChild(label);
+
+                let inputElement;
+                const inputType = (isFileField) ? 'file' : (schema.typeOverrides && schema.typeOverrides[field] ? schema.typeOverrides[field] : 'text');
+
+
+                if (inputType === 'file') {
+                    inputElement = document.createElement('input');
+                    inputElement.type = 'file';
+                    inputElement.className = "form-file-input mt-1"; // 使用自定义的文件输入样式
+                    // 在编辑模式下，如果字段是文件字段，可以显示当前文件名或链接（如果数据库存的是URL）
+                    if (action === 'edit' && record && record[field]) {
+                        const existingFileDisplay = document.createElement('p');
+                        existingFileDisplay.className = 'text-xs text-slate-400 mt-1';
+                        existingFileDisplay.innerHTML = `当前文件: <a href="${escapeHtml(record[field])}" target="_blank" class="text-indigo-400 hover:underline">${escapeHtml(record[field])}</a> (上传新文件将替换它)`;
+                        fieldDiv.appendChild(existingFileDisplay);
+                    }
+                } else if (inputType === 'textarea') {
+                    inputElement = document.createElement('textarea');
+                    inputElement.rows = 3;
+                    inputElement.className = "form-textarea mt-1 block w-full p-2 bg-slate-700 border-slate-600 text-slate-200 rounded-md shadow-sm";
+                } else if (inputType === 'checkbox') {
+                    inputElement = document.createElement('input');
+                    inputElement.type = 'checkbox';
+                    inputElement.className = "mt-1 h-5 w-5 text-indigo-500 border-slate-500 rounded focus:ring-indigo-400 bg-slate-700";
+                    if (record && record[field]) {
+                        inputElement.checked = true;
+                    }
+                } else {
+                    inputElement = document.createElement('input');
+                    inputElement.type = inputType;
+                    inputElement.className = "form-input mt-1 block w-full p-2 bg-slate-700 border-slate-600 text-slate-200 rounded-md shadow-sm";
+                }
+
+                inputElement.id = `field-${field}`;
+                inputElement.name = field;
+
+                if (record && record.hasOwnProperty(field) && inputType !== 'checkbox' && inputType !== 'file') {
+                    inputElement.value = record[field] !== null && record[field] !== undefined ? record[field] : '';
+                }
+                if (inputType === 'number' && record && record[field] !== null && record[field] !== undefined) {
+                    inputElement.value = record[field];
+                }
+                if (action === 'add' && inputType === 'password' && field === 'password_login') {
+                    inputElement.required = true;
+                }
+
+                fieldDiv.appendChild(inputElement);
+                formFieldsContainer.appendChild(fieldDiv);
+            });
+
+            if (action === 'edit' && record) {
+                console.log('fuck');
+                console.log(record);
+                currentRecordId = record['result'][schema.pk];
+                console.log('rrrrrr', currentRecordId);
+            } else {
+                currentRecordId = null;
+            }
+
+            formModal.style.display = 'flex'; // 直接设置 display 来显示模态框
+        }
+
+        function closeModal() {
+            // formModal.classList.remove('active');
+            formModal.style.display = 'none';
+            recordForm.reset();
+            formFieldsContainer.innerHTML = '';
+        }
+
+        // --- 事件处理 ---
+        // 使函数在 window 对象上可用，以便内联 onclick 可以调用
+        window.handleEditRecord = async function (tableName, recordId) {
+            try {
+                // 后端 /query?record_id=X 返回的是 { "code": 200, "msg": "...", "data": { ...record... } }
+                const response = await apiRequest(`/query?table_name=${tableName}&record_id=${recordId}`);
+                if (response && response.code === 200 && response.data) {
+                    console.log('ssssssasffsa', recordId);
+                    currentRecordId = recordId;
+                    openModal('edit', tableName, response.data);
+                } else {
+                    showMessage(response.msg || '未找到记录或数据格式错误。', true);
+                }
+            } catch (error) {
+                showMessage(`获取记录详情失败: ${error.message}`, true);
+            }
+        };
+
+        window.handleDeleteRecord = async function (tableName, recordId) {
+            if (!confirm(`确定要删除表 ${tableName} 中 ID 为 ${recordId} 的记录吗？此操作不可恢复！`)) {
+                return;
+            }
+            try {
+                const response = await apiRequest(`/delete`, 'DELETE', { table_name: tableName, record_id: recordId });
+                // console.log(response);
+                if (response && response.code === 200) {
+                    showMessage('记录删除成功！');
+                    loadTableData(currentPage); // 留在当前页刷新
+                } else {
+                    throw new Error(response.msg || "删除失败");
+                }
+            } catch (error) {
+                showMessage(`删除记录失败: ${error.message}`, true);
+            }
+        };
+
+        showAddFormBtn.addEventListener('click', () => {
+            if (!currentTable) {
+                showMessage('请先加载一个数据表。', true);
+                return;
+            }
+            openModal('add', currentTable);
+        });
+
+        recordForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const rawFormData = new FormData(recordForm);
+            const schema = tableSchemas[currentTable];
+
+            if (!schema) {
+                showMessage(`表 '${currentTable}' 的结构定义未找到!`, true);
+                return;
+            }
+
+            const plainDataPayload = {}; // 用于收集非文件字段
+            const filesToUpload = [];    // 用于收集文件字段
+
+            schema.fields.forEach(field => {
+                const isPkField = field === schema.pk;
+                const isReadOnlyInSchema = schema.readOnlyFields && schema.readOnlyFields.includes(field);
+                const isFileField = schema.fileFields && schema.fileFields.includes(field);
+
+                if (currentAction === 'edit' && (isPkField || (isReadOnlyInSchema && !isFileField))) { return; }
+                if (currentAction === 'add' && isPkField && isReadOnlyInSchema) { return; }
+
+                const inputElement = recordForm.elements[field];
+                if (inputElement) {
+                    if (isFileField) {
+                        if (inputElement.files && inputElement.files[0]) {
+                            filesToUpload.push({ fieldName: field, file: inputElement.files[0] });
+                        }
+                    } else if (inputElement.type === 'checkbox') {
+                        plainDataPayload[field] = inputElement.checked;
+                    } else if (inputElement.type === 'number') {
+                        const val = rawFormData.get(field);
+                        plainDataPayload[field] = val === '' ? null : parseFloat(val);
+                    } else if (inputElement.type === 'datetime-local') {
+                        const val = rawFormData.get(field);
+                        plainDataPayload[field] = val ? new Date(val).toISOString() : null;
+                    } else {
+                        plainDataPayload[field] = rawFormData.get(field);
+                    }
+                }
+            });
+
+            if (currentAction === 'add' && currentTable === 'users' && !plainDataPayload.password_login) {
+                showMessage('用户登录密码不能为空。', true);
+                return;
+            }
+            if (currentAction === 'edit' && currentTable === 'users' && plainDataPayload.password_login === '') {
+                delete plainDataPayload.password_login;
+            }
+
+            // --- 'add' 操作逻辑 ---
+            if (currentAction === 'add') {
+                const formDataForAdd = new FormData();
+                formDataForAdd.append('table_name', currentTable);
+                Object.keys(plainDataPayload).forEach(key => {
+                    formDataForAdd.append(`record_data[${key}]`, plainDataPayload[key] === null ? '' : plainDataPayload[key]);
+                });
+                filesToUpload.forEach(fileItem => {
+                    formDataForAdd.append(fileItem.fieldName, fileItem.file);
+                });
+
+                try {
+                    const response = await fetch(`${BASE_URL}/add`, { method: 'POST', body: formDataForAdd });
+                    if (!response.ok) {
+                        let errorData; try { errorData = await response.json(); } catch (e) { errorData = { msg: `HTTP ${response.status}` }; }
+                        throw new Error(errorData.msg || `请求失败`);
+                    }
+                    const result = await response.json();
+                    if (result && result.code === 201) {
+                        showMessage('记录添加成功！');
+                        closeModal();
+                        loadTableData(1);
+                    } else {
+                        throw new Error(result.msg || "添加操作失败");
+                    }
+                } catch (error) {
+                    showMessage(`添加操作失败: ${error.message}`, true);
+                }
+            }
+            // --- 'edit' 操作逻辑 (适配单字段更新API) ---
+            else if (currentAction === 'edit') {
+                const updatePromises = [];
+                let fileUpdateSkippedMessage = "";
+
+                // 1. 更新普通字段 (每个字段一个请求)
+                for (const fieldName in plainDataPayload) {
+                    if (plainDataPayload.hasOwnProperty(fieldName)) {
+                        const fieldValue = plainDataPayload[fieldName];
+                        // 对于密码字段，如果为空字符串，则不发送更新请求 (已在前面 delete plainDataPayload.password_login 处理)
+                        if (currentTable === 'users' && fieldName === 'password_login' && fieldValue === '') {
+                            continue;
+                        }
+
+                        console.log(`准备更新字段: ${fieldName}, 值: ${fieldValue}`); // 调试信息
+                        updatePromises.push(
+                            apiRequestJson(`/update`, 'PUT', {
+                                table_name: currentTable,
+                                record_id: currentRecordId,
+                                field: fieldName,
+                                value: fieldValue
+                            }).catch(err => {
+                                console.error(`字段 ${fieldName} 更新失败:`, err); // 调试信息
+                                return { fieldName, error: err.message || '未知错误' }; // 返回错误对象以便 Promise.allSettled 处理
+                            })
+                        );
+                    }
+                }
+
+                // 2. 处理文件字段 (提示用户当前后端 /update 不支持文件)
+                if (filesToUpload.length > 0) {
+                    fileUpdateSkippedMessage = "注意：文件字段的更新当前无法通过此编辑接口完成。您的后端 /update 接口需要支持 multipart/form-data 才能更新文件。本次操作中，文件未被更新。";
+                    filesToUpload.forEach(fileItem => {
+                        console.warn(`跳过文件字段 '${fileItem.fieldName}' 的更新，因为后端 /update 接口不支持。`);
+                    });
+                }
+
+                if (updatePromises.length === 0 && !fileUpdateSkippedMessage) {
+                    showMessage('没有可更新的文本字段。', false);
+                    closeModal();
+                    return;
+                }
+                if (updatePromises.length === 0 && fileUpdateSkippedMessage) { // 只有文件被更改，但无法上传
+                    showMessage(fileUpdateSkippedMessage, true);
+                    closeModal();
+                    loadTableData(currentPage);
+                    return;
+                }
+
+                try {
+                    const results = await Promise.allSettled(updatePromises);
+                    let allSuccessful = true;
+                    const errorMessages = [];
+
+                    results.forEach(result => {
+                        if (result.status === 'rejected') { // 网络错误或其他 fetch 错误
+                            allSuccessful = false;
+                            // result.reason 已经是 Error 对象了
+                            errorMessages.push(result.reason.message || `某个字段更新时发生网络错误`);
+                        } else if (result.value.code !== 200) { // API 返回了非200的 code
+                            allSuccessful = false;
+                            errorMessages.push(result.value.msg || `某个字段更新失败 (code: ${result.value.code})`);
+                        }
+                    });
+
+                    let finalMessage = "";
+                    if (allSuccessful) {
+                        finalMessage = "记录更新成功！";
+                    } else {
+                        finalMessage = "部分或全部字段更新失败：\n" + errorMessages.join("\n");
+                    }
+                    if (fileUpdateSkippedMessage) {
+                        finalMessage += "\n" + fileUpdateSkippedMessage;
+                    }
+                    showMessage(finalMessage, !allSuccessful || !!fileUpdateSkippedMessage); // 如果有任何错误或文件跳过，则标记为错误消息
+
+                    closeModal();
+                    loadTableData(currentPage);
+
+                } catch (error) {
+                    showMessage(`更新过程中发生意外错误: ${error.message}`, true);
+                }
+            }
+        });
+
+        // --- 初始化 ---
+        loadTableBtn.addEventListener('click', () => loadTableData(1)); // 默认加载第一页
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelModalBtn.addEventListener('click', closeModal);
+
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 1) loadTableData(currentPage - 1);
+        });
+        nextPageBtn.addEventListener('click', () => {
+            if (currentPage < totalPages) loadTableData(currentPage + 1);
+        });
+
+        // 初始消息
+        dataDisplayArea.innerHTML = '<p class="p-6 text-slate-400">请选择一个数据表并点击 "加载数据" 来查看内容。</p>';
+
+    </script>
+</body>
+
+</html>
