@@ -1,6 +1,5 @@
 <template>
   <view class="account-security-container">
-    <!-- 顶部导航栏 -->
     <view class="top-bar">
       <view class="back-button" @tap="goBack">
         <image src="/static/image/icon_back.png" class="back-icon"></image>
@@ -8,47 +7,54 @@
       <text class="title">账号安全</text>
     </view>
 
-    <!-- 账号信息 -->
     <view class="section">
       <text class="section-title">账号信息</text>
       <view class="info-item">
         <text class="info-label">昵称:</text>
         <text class="info-value">{{ nickname }}</text>
-        <button class="edit-button" @tap="showEditModal('nickname')">修改</button>
+        <button class="edit-button" @tap="showEditModal('nickname')">
+          <text>修改</text>
+          <image src="/static/image/icon_arrow_right.png" class="edit-arrow-icon"></image>
+        </button>
       </view>
       <view class="info-item">
         <text class="info-label">身份:</text>
         <text class="info-value">{{ identity }}</text>
-        <button class="edit-button" @tap="showEditModal('identity')">修改</button>
+        <button class="edit-button" @tap="showEditModal('identity')">
+          <text>修改</text>
+          <image src="/static/image/icon_arrow_right.png" class="edit-arrow-icon"></image>
+        </button>
       </view>
       <view class="info-item">
-        <text class="info-label">绑定手机号:</text>
+        <text class="info-label">手机号:</text>
         <text class="info-value">{{ phoneNumber }}</text>
-        <button class="edit-button" @tap="showEditModal('phoneNumber')">修改</button>
+        <button class="edit-button" @tap="showEditModal('phoneNumber')">
+          <text>修改</text>
+          <image src="/static/image/icon_arrow_right.png" class="edit-arrow-icon"></image>
+        </button>
       </view>
       <view class="info-item">
         <text class="info-label">邮箱:</text>
         <text class="info-value">{{ email }}</text>
-        <button class="edit-button" @tap="showEditModal('email')">修改</button>
+        <button class="edit-button" @tap="showEditModal('email')">
+          <text>修改</text>
+          <image src="/static/image/icon_arrow_right.png" class="edit-arrow-icon"></image>
+        </button>
       </view>
     </view>
 
-    <!-- 安全设置 -->
     <view class="section">
       <text class="section-title">安全设置</text>
       <view class="info-item">
         <text class="info-label">密码</text>
         <text class="info-value">********</text>
-        <button class="edit-button" @tap="showPasswordModal">修改</button>
+        <button class="edit-button" @tap="showPasswordModal">
+          <text>修改</text>
+          <image src="/static/image/icon_arrow_right.png" class="edit-arrow-icon"></image>
+        </button>
       </view>
     </view>
 
-    <!-- 退出登录 -->
-    <view class="logout">
-      <button class="logout-button" @tap="logout">退出登录</button>
-    </view>
-
-    <!-- 修改密码弹窗 -->
     <view v-if="showPasswordModalFlag" class="modal">
       <view class="modal-content">
         <text class="modal-title">修改密码</text>
@@ -71,7 +77,6 @@
       </view>
     </view>
 
-    <!-- 修改信息弹窗 -->
     <view v-if="showEditModalFlag" class="modal">
       <view class="modal-content">
         <text class="modal-title">修改{{ editFieldLabel }}</text>
@@ -110,14 +115,12 @@ export default {
       uni.navigateBack();
     },
     showEditModal(field) {
-      // 显示修改信息弹窗
       this.editField = field;
       this.editFieldLabel = field === 'nickname' ? '昵称' : field === 'identity' ? '身份' : field === 'phoneNumber' ? '绑定手机号' : '邮箱';
-      this.editValue = this[field]; // 设置初始值
+      this.editValue = this[field];
       this.showEditModalFlag = true;
     },
     confirmEdit() {
-      // 确认修改信息
       if (!this.editValue) {
         uni.showToast({
           title: `${this.editFieldLabel}不能为空`,
@@ -129,21 +132,18 @@ export default {
         title: '修改功能待实现',
         icon: 'none'
       });
-      this.cancelEdit(); // 关闭弹窗
+      this.cancelEdit();
     },
     cancelEdit() {
-      // 关闭修改信息弹窗
       this.showEditModalFlag = false;
       this.editValue = '';
       this.editField = '';
       this.editFieldLabel = '';
     },
     showPasswordModal() {
-      // 显示修改密码弹窗
       this.showPasswordModalFlag = true;
     },
     confirmPasswordChange() {
-      // 简单的密码确认逻辑
       if (this.newPassword !== this.confirmPassword) {
         uni.showToast({
           title: '新密码与确认密码不一致',
@@ -155,21 +155,13 @@ export default {
         title: '修改功能待实现',
         icon: 'none'
       });
-      this.cancelPasswordChange(); // 关闭弹窗
+      this.cancelPasswordChange();
     },
     cancelPasswordChange() {
-      // 关闭修改密码弹窗
       this.showPasswordModalFlag = false;
-      // 清空输入框
       this.oldPassword = '';
       this.newPassword = '';
       this.confirmPassword = '';
-    },
-    logout() {
-      uni.showToast({
-        title: '退出登录功能待实现',
-        icon: 'none'
-      });
     }
   }
 };
@@ -178,8 +170,9 @@ export default {
 <style scoped>
 .account-security-container {
   padding: 30rpx;
-  background: #f5f5f5;
-  margin-top: 100rpx; /* 为顶部导航栏留出空间 */
+  background: #ffffff;
+  margin-top: 100rpx; 
+  padding-bottom: 30rpx;
 }
 
 .top-bar {
@@ -217,6 +210,9 @@ export default {
   box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
   padding: 20rpx;
 }
+.section:last-child {
+  margin-bottom: 0;
+}
 
 .section-title {
   font-size: 32rpx;
@@ -249,29 +245,34 @@ export default {
 }
 
 .edit-button {
-  font-size: 24rpx;
+  font-size: 28rpx;
   color: #409eff;
-  background: none;
-  border: 1rpx solid #409eff;
-  padding: 10rpx 20rpx;
-  border-radius: 8rpx;
-}
-
-.logout {
-  margin-top: 40rpx;
-  display: flex;
-  justify-content: center;
-}
-
-.logout-button {
-  width: 80%;
-  padding: 20rpx;
-  background: #f56c6c;
-  color: #fff;
-  font-size: 32rpx;
-  border-radius: 40rpx;
+  background: transparent;
   border: none;
-  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+  padding: 0;
+  margin-left: 10rpx;
+  display: flex;
+  align-items: center; /* 这对于图片和文字的垂直对齐很重要 */
+  outline: none;
+  line-height: normal;
+}
+.edit-button::after {
+  border: none;
+}
+
+/* 移除了之前的 .arrow-icon 文本箭头样式 */
+/* 如果您之前有 .arrow-icon 样式，可以删除或注释掉 */
+/* .arrow-icon {
+  margin-left: 8rpx;
+  font-size: 28rpx;
+  color: #409eff;
+} */
+
+/* 新增：修改按钮中的箭头图标样式 */
+.edit-arrow-icon {
+  width: 24rpx;  /* 图标宽度，请根据您的图标实际大小调整 */
+  height: 24rpx; /* 图标高度，请根据您的图标实际大小调整 */
+  margin-left: 8rpx; /* 图标与“修改”文字的间距 */
 }
 
 /* 弹窗样式 */
@@ -299,7 +300,7 @@ export default {
 .modal-title {
   font-size: 32rpx;
   font-weight: bold;
-  margin-bottom: 20rpx;
+  margin-bottom: 30rpx;
   text-align: center;
 }
 
@@ -319,29 +320,43 @@ export default {
   width: 100%;
   border: 1rpx solid #ddd;
   border-radius: 8rpx;
+  box-sizing: border-box;
+  height: 70rpx;
+  display: flex;
+  align-items: center;
+}
+
+.input-field:focus {
+  border-color: #409eff;
 }
 
 .button-group {
   display: flex;
   justify-content: space-between;
-}
-
-.confirm-button, .cancel-button {
-  width: 48%;
-  padding: 20rpx;
-  border-radius: 40rpx;
-  font-size: 32rpx;
-  border: none;
-  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+  margin-top: 40rpx;
 }
 
 .confirm-button {
+  width: 48%;
+  padding: 14rpx; 
+  border-radius: 8rpx;
+  font-size: 28rpx; 
+  border: none;
   background-color: #409eff;
   color: #fff;
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  line-height: normal;
 }
 
 .cancel-button {
-  background-color: #f56c6c;
-  color: #fff;
+  width: 48%;
+  padding: 14rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  background-color: #fff;
+  color: #409eff;
+  border: 1rpx solid #409eff;
+  box-shadow: none;
+  line-height: normal;
 }
 </style>

@@ -28,25 +28,30 @@
 
     <!-- 功能入口 -->
     <view class="menu-list">
-      <view class="menu-item" @tap="goToOrders">
+      <view class="menu-item" @tap="goToWallet">
         <image src="/static/image/icon_orders.png" class="menu-icon"></image>
         <text class="menu-text">钱包</text>
+        <image src="/static/image/icon_arrow_right.png" class="arrow-icon"></image>
       </view>
       <view class="menu-item" @tap="goToHistory">
         <image src="/static/image/icon_history.png" class="menu-icon"></image>
         <text class="menu-text">历史订单</text>
+        <image src="/static/image/icon_arrow_right.png" class="arrow-icon"></image>
       </view>
       <view class="menu-item" @tap="goToVerify">
         <image src="/static/image/icon_verify.png" class="menu-icon"></image>
         <text class="menu-text">账号与安全</text>
+        <image src="/static/image/icon_arrow_right.png" class="arrow-icon"></image>
       </view>
       <view class="menu-item" @tap="goToSalaryFlow">
         <image src="/static/image/icon_salary.png" class="menu-icon"></image>
         <text class="menu-text">工资流水</text>
+        <image src="/static/image/icon_arrow_right.png" class="arrow-icon"></image>
       </view>
 	  <view class="menu-item" @tap="handleLogout">
-	    <image src="/static/image/icon_salary.png" class="menu-icon"></image>
+	    <image src="/static/image/icon_logout.png" class="menu-icon"></image>
 	    <text class="menu-text">登出</text>
+      <image src="/static/image/icon_arrow_right.png" class="arrow-icon"></image>
 	  </view>
     </view>
   </view>
@@ -57,8 +62,8 @@ import logout from '@/utils/api/logout';
 
 export default {
   methods: {
-    goToOrders() {
-      uni.navigateTo({ url: '/pages/personal/orders' });
+    goToWallet() {
+      uni.navigateTo({ url: '/pages/personal/wallet' });
     },
     goToHistory() {
       uni.navigateTo({ url: '/pages/personal/orders' });
@@ -189,5 +194,12 @@ export default {
 .menu-text {
   font-size: 32rpx;
   color: #333;
+}
+
+.arrow-icon {
+  margin-left: auto;
+  width: 30rpx;
+  height: 30rpx;
+  object-fit: contain;
 }
 </style>
