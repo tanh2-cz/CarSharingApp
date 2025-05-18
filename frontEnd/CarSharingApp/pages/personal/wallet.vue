@@ -111,7 +111,7 @@ import order from '../../utils/api/order';
 				let orderInfo = result.data.orderinfo;
 
 				var EnvUtils = plus.android.importClass("com.alipay.sdk.app.EnvUtils");    
-            	EnvUtils.setEnv(EnvUtils.EnvEnum.SANDBOX);
+				EnvUtils.setEnv(EnvUtils.EnvEnum.SANDBOX);
 
 				uni.requestPayment({
 					provider: 'alipay',
