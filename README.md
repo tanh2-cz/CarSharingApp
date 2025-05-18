@@ -4,6 +4,11 @@
 1、由于正式版的接口需要营业执照才能申请，因此采用沙箱版本进行，需要在Android模拟器或者手机上安装支付宝沙箱版本，apk文件下载地址为 http://partner-sys.cn-hangzhou.alipay-pub.aliyun-inc.com/fcservice/20230802145602/wallet_103908030_client_release_202308012045.apk
 （直接点击链接无法跳转的话，复制网址到新的标签页中即可下载）
 
+需要安装依赖
+```
+pip install python-alipay-sdk
+```
+
 2、沙箱版本的支付宝初始余额是100W，用户名、登录密码、支付密码如下：
 ![alt text](readme_img/image.png)
 
