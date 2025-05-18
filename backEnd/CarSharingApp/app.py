@@ -12,6 +12,7 @@ import re, numpy as np
 import pytz
 import math
 
+from utils import create_alipay, generate_order_number
 
 app = Flask(__name__)
 
@@ -46,6 +47,41 @@ def error(code, msg, http_status=400):
         "data": None
     }), http_status
 
+# 支付宝app端路由
+@app.route('/order', methods=['GET', 'POST'])
+# App 支付，将 order_string 返回给 app 即可
+def create_order():
+    subject = "测试订单"
+    alipay = create_alipay()
+    order_string = alipay.api_alipay_trade_app_pay(
+        out_trade_no=generate_order_number(),
+        total_amount=0.01,
+        subject=subject,
+        # notify_url="https://example.com/notify" # 可选，不填则使用默认 notify url
+    )
+    return success(data={'orderinfo': order_string})
+
+# 目前暂时无用
+@app.route('/alipay/result/')
+def payment():
+    # 进行校验，因为支付成功之后，后端是不知道是否成功的，所以需要校验一下
+    alipay = create_alipay()
+    data = request.args.to_dict()  # 把get请求的参数转换成字典
+    signature = data.pop("sign")  # 把sign pop出去
+    # 验证数据和签名是否有效
+    success = alipay.verify(data, signature)  # success是布尔值
+    if request.method == "GET":
+        if success:
+            # 如果成功支付了，这个success是True
+            # 接着写逻辑了，比如修改当前订单的状态
+            print('支付成功，后台已经校验过了，金币+1', success, data)
+            return render_template('result.html', success=success, data=data)
+        return '支付失败提示！'
+    if success and data["trade_status"] in ("TRADE_SUCCESS", "TRADE_FINISHED"):
+        # 支付宝向你指定的后端服务地址发送 POST 请求进行异步回调校验，最后一定要返回一个success
+        print('支付成功，后台已经校验过了，金币+1')
+        return 'success'    # 返回一个success
+    return '支付失败啦！'
 """
 以下为数据表统一增删改查
 """

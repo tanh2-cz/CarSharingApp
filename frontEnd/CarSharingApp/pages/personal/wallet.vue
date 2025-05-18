@@ -59,7 +59,9 @@
 	</view>
 </template>
 
+
 <script>
+import order from '../../utils/api/order';
 	export default {
 		data() {
 			return {
@@ -104,10 +106,30 @@
 				});
 			},
 			handleMyAlipayTap() {
-				uni.showToast({
-					title: '点击了我的支付宝功能',
-					icon: 'none',
-				});
+				order().then((result) => {
+				console.log('Order Info:', result.data.orderinfo); // 输出 orderInfo 的内容
+				let orderInfo = result.data.orderinfo;
+
+				var EnvUtils = plus.android.importClass("com.alipay.sdk.app.EnvUtils");    
+            	EnvUtils.setEnv(EnvUtils.EnvEnum.SANDBOX);
+
+				uni.requestPayment({
+					provider: 'alipay',
+					orderInfo: orderInfo, //支付宝订单数据
+					success: function (res) {
+						console.log('success:' + JSON.stringify(res));
+					},
+					fail: function (err) {
+						console.log('fail:' + JSON.stringify(err));
+					}
+				})
+				}).catch((err) => {
+					uni.showToast({
+						title: '支付失败',
+						icon: 'none'
+					})
+					console.log(err);
+				})
 			},
 			handlePaymentSettingsTap() {
 				uni.showToast({
