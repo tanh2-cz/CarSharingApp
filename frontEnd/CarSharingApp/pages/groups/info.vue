@@ -21,10 +21,28 @@
       </view>
     </view>
 
+    <!-- 分类切换按钮 -->
+    <view class="group-tabs">
+      <view
+        class="tab-item"
+        :class="{ active: activeTab === 'joined' }"
+        @tap="switchTab('joined')"
+      >
+        我加入的群聊
+      </view>
+      <view
+        class="tab-item"
+        :class="{ active: activeTab === 'created' }"
+        @tap="switchTab('created')"
+      >
+        我创建的群聊
+      </view>
+    </view>
+
     <scroll-view scroll-y class="chat-list" :scroll-with-animation="true">
       <movable-area
         class="movable-area"
-        v-for="(chat, index) in chatList"
+        v-for="(chat, index) in filteredChatList"
         :key="index"
       >
         <movable-view
@@ -96,6 +114,7 @@
 export default {
   data() {
     return {
+      activeTab: "created", // 当前激活的标签
       chatList: [
         {
           id: 1,
@@ -104,6 +123,7 @@ export default {
           lastMessage: "我们几点上车？",
           unreadCount: 7,
           time: "星期二",
+          type: "created", // 添加类型标记
         },
         {
           id: 2,
@@ -112,6 +132,7 @@ export default {
           lastMessage: "请大家支付一下。",
           unreadCount: 7,
           time: "星期二",
+          type: "joined",
         },
         {
           id: 3,
@@ -120,6 +141,7 @@ export default {
           lastMessage: "当天你还需要购票",
           unreadCount: 1,
           time: "星期二",
+          type: "joined",
         },
         {
           id: 4,
@@ -128,6 +150,7 @@ export default {
           lastMessage: "龙泉广场集合。",
           unreadCount: 1,
           time: "星期二",
+          type: "joined",
         },
         {
           id: 5,
@@ -136,6 +159,7 @@ export default {
           lastMessage: "打车-支付成功。",
           unreadCount: 7,
           time: "星期五",
+          type: "created", // 添加类型标记
         },
         {
           id: 6,
@@ -143,6 +167,7 @@ export default {
           icon: "/static/image/group6.png",
           lastMessage: "还有谁是到北京博物馆的？",
           time: "2025/02/15",
+          type: "joined",
         },
         {
           id: 7,
@@ -150,6 +175,7 @@ export default {
           icon: "/static/image/group7.png",
           lastMessage: "帮宁返程火车票优惠订",
           time: "2025/02/02",
+          type: "joined",
         },
         {
           id: 8,
@@ -157,6 +183,7 @@ export default {
           icon: "/static/image/group8.png",
           lastMessage: "帮宁双程全家游，优惠品质好房专享低价～",
           time: "2025/01/30",
+          type: "created", // 添加类型标记
         },
         {
           id: 9,
@@ -164,6 +191,7 @@ export default {
           icon: "/static/image/group9.png",
           lastMessage: "升限额-我想以帮您看一下房子",
           time: "2024/12/08",
+          type: "joined",
         },
         {
           id: 10,
@@ -171,6 +199,7 @@ export default {
           icon: "/static/image/group10.png",
           lastMessage: "升限额-我想以帮您看一下房子",
           time: "2024/12/08",
+          type: "joined",
         },
         {
           id: 11,
@@ -178,6 +207,7 @@ export default {
           icon: "/static/image/group11.png",
           lastMessage: "我想以帮您看一下房子",
           time: "2024/12/08",
+          type: "joined",
         },
         {
           id: 12,
@@ -185,16 +215,39 @@ export default {
           icon: "/static/image/group12.png",
           lastMessage: "看一下",
           time: "2024/12/08",
+          type: "joined",
         },
-        { id: 13, name: "", icon: "", lastMessage: "", time: "" },
-        { id: 14, name: "", icon: "", lastMessage: "", time: "" },
+        {
+          id: 13,
+          name: "",
+          icon: "",
+          lastMessage: "",
+          time: "",
+          type: "joined",
+        },
+        {
+          id: 14,
+          name: "",
+          icon: "",
+          lastMessage: "",
+          time: "",
+          type: "joined",
+        },
       ],
       showAddModal: false,
       startX: 0, // 记录触摸起始位置,
       searchQuery: "",
     };
   },
+  computed: {
+    filteredChatList() {
+      return this.chatList.filter((chat) => chat.type === this.activeTab);
+    },
+  },
   methods: {
+    switchTab(tab) {
+      this.activeTab = tab;
+    },
     showFilter() {
       uni.showToast({
         title: "筛选功能待实现",
@@ -615,5 +668,45 @@ export default {
   color: #333;
   /* background-color: #28a745; */
   margin-left: 7%;
+}
+
+/* 分类切换按钮样式 */
+.group-tabs {
+  display: flex;
+  justify-content: space-around;
+  background: #fff;
+  padding: 20rpx;
+  margin-top: 120rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.tab-item {
+  padding: 15rpx 30rpx;
+  font-size: 28rpx;
+  color: #666;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.tab-item.active {
+  color: #28a745;
+  font-weight: 500;
+}
+
+.tab-item.active::after {
+  content: "";
+  position: absolute;
+  bottom: -10rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40rpx;
+  height: 4rpx;
+  background: #28a745;
+  border-radius: 2rpx;
+}
+
+/* 调整列表上边距 */
+.chat-list {
+  margin-top: 0;
 }
 </style>

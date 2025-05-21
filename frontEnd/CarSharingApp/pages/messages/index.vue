@@ -125,6 +125,23 @@
             <text class="text-time">出发时间: {{ ride.time }}</text>
             <text class="text-price">价格: ¥{{ ride.price }}</text>
           </view>
+          <!-- 添加群成员信息 -->
+          <view class="group-members">
+            <text class="member-count"
+              >群成员: {{ ride.memberCount || 0 }}人</text
+            >
+            <view class="member-avatars">
+              <image
+                v-for="(member, mIndex) in (ride.members || []).slice(0, 3)"
+                :key="mIndex"
+                :src="member.avatar"
+                class="member-avatar"
+              />
+              <view v-if="(ride.members || []).length > 3" class="more-members">
+                +{{ (ride.members || []).length - 3 }}
+              </view>
+            </view>
+          </view>
         </view>
         <!-- 司机视角 待接单 已接单 -->
         <!--        <view class="ride-status">
@@ -137,7 +154,7 @@
             class="status-button disabled"
             disabled
           >
-            已加群
+            已加入群聊
           </button>
           <button v-else class="status-button" @click="goToGroupDetails(ride)">
             加群去拼车
@@ -176,10 +193,34 @@ export default {
         {
           id: 1,
           startLocation: "上海大学",
-          endLocation: "虹桥机场",
-          time: "14:30",
-          price: 50,
-          status: "待接单",
+          endLocation: "同济大学",
+          time: "08:30",
+          price: 25,
+          status: 0,
+          memberCount: 4, // 添加群成员数量
+          members: [
+            // 添加群成员数组
+            {
+              id: 1,
+              avatar: "/static/image/person1.png",
+              name: "用户1",
+            },
+            {
+              id: 2,
+              avatar: "/static/image/person2.png",
+              name: "用户2",
+            },
+            {
+              id: 3,
+              avatar: "/static/image/person3.png",
+              name: "用户3",
+            },
+            {
+              id: 4,
+              avatar: "/static/image/person4.png",
+              name: "用户4",
+            },
+          ],
         },
         {
           id: 2,
@@ -188,6 +229,30 @@ export default {
           time: "16:00",
           price: 80,
           status: "已接单",
+          memberCount: 4, // 添加默认值
+          members: [
+            // 添加群成员数组
+            {
+              id: 1,
+              avatar: "/static/image/person1.png",
+              name: "用户1",
+            },
+            {
+              id: 2,
+              avatar: "/static/image/person2.png",
+              name: "用户2",
+            },
+            {
+              id: 3,
+              avatar: "/static/image/person3.png",
+              name: "用户3",
+            },
+            {
+              id: 4,
+              avatar: "/static/image/person4.png",
+              name: "用户4",
+            },
+          ],
         },
         {
           id: 3,
@@ -196,6 +261,30 @@ export default {
           time: "09:00",
           price: 30,
           status: "待接单",
+          memberCount: 4,
+          members: [
+            // 添加群成员数组
+            {
+              id: 1,
+              avatar: "/static/image/person1.png",
+              name: "用户1",
+            },
+            {
+              id: 2,
+              avatar: "/static/image/person2.png",
+              name: "用户2",
+            },
+            {
+              id: 3,
+              avatar: "/static/image/person3.png",
+              name: "用户3",
+            },
+            {
+              id: 4,
+              avatar: "/static/image/person4.png",
+              name: "用户4",
+            },
+          ],
         },
         {
           id: 4,
@@ -204,6 +293,30 @@ export default {
           time: "09:00",
           price: 30,
           status: "待接单",
+          memberCount: 4,
+          members: [
+            // 添加群成员数组
+            {
+              id: 1,
+              avatar: "/static/image/person1.png",
+              name: "用户1",
+            },
+            {
+              id: 2,
+              avatar: "/static/image/person2.png",
+              name: "用户2",
+            },
+            {
+              id: 3,
+              avatar: "/static/image/person3.png",
+              name: "用户3",
+            },
+            {
+              id: 4,
+              avatar: "/static/image/person4.png",
+              name: "用户4",
+            },
+          ],
         },
         {
           id: 5,
@@ -212,6 +325,30 @@ export default {
           time: "09:00",
           price: 30,
           status: "待接单",
+          memberCount: 4,
+          members: [
+            // 添加群成员数组
+            {
+              id: 1,
+              avatar: "/static/image/person1.png",
+              name: "用户1",
+            },
+            {
+              id: 2,
+              avatar: "/static/image/person2.png",
+              name: "用户2",
+            },
+            {
+              id: 3,
+              avatar: "/static/image/person3.png",
+              name: "用户3",
+            },
+            {
+              id: 4,
+              avatar: "/static/image/person4.png",
+              name: "用户4",
+            },
+          ],
         },
         {
           id: 6,
@@ -220,6 +357,30 @@ export default {
           time: "09:00",
           price: 30,
           status: "待接单",
+          memberCount: 4,
+          members: [
+            // 添加群成员数组
+            {
+              id: 1,
+              avatar: "/static/image/person1.png",
+              name: "用户1",
+            },
+            {
+              id: 2,
+              avatar: "/static/image/person2.png",
+              name: "用户2",
+            },
+            {
+              id: 3,
+              avatar: "/static/image/person3.png",
+              name: "用户3",
+            },
+            {
+              id: 4,
+              avatar: "/static/image/person4.png",
+              name: "用户4",
+            },
+          ],
         },
         {
           id: 7,
@@ -228,6 +389,30 @@ export default {
           time: "09:00",
           price: 30,
           status: "待接单",
+          memberCount: 4,
+          members: [
+            // 添加群成员数组
+            {
+              id: 1,
+              avatar: "/static/image/person1.png",
+              name: "用户1",
+            },
+            {
+              id: 2,
+              avatar: "/static/image/person2.png",
+              name: "用户2",
+            },
+            {
+              id: 3,
+              avatar: "/static/image/person3.png",
+              name: "用户3",
+            },
+            {
+              id: 4,
+              avatar: "/static/image/person4.png",
+              name: "用户4",
+            },
+          ],
         },
         {
           id: 0,
@@ -236,6 +421,30 @@ export default {
           time: "09:00",
           price: 30,
           status: "待接单",
+          memberCount: 4,
+          members: [
+            // 添加群成员数组
+            {
+              id: 1,
+              avatar: "/static/image/person1.png",
+              name: "用户1",
+            },
+            {
+              id: 2,
+              avatar: "/static/image/person2.png",
+              name: "用户2",
+            },
+            {
+              id: 3,
+              avatar: "/static/image/person3.png",
+              name: "用户3",
+            },
+            {
+              id: 4,
+              avatar: "/static/image/person4.png",
+              name: "用户4",
+            },
+          ],
         },
       ],
       filteredRides: [],
@@ -689,5 +898,46 @@ export default {
   font-size: 28rpx;
   color: #333;
   margin-bottom: 20rpx;
+}
+
+.group-members {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20rpx;
+  padding-top: 10rpx;
+  border-top: 1px solid #eee;
+}
+
+.member-count {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.member-avatars {
+  display: flex;
+  align-items: center;
+}
+
+.member-avatar {
+  width: 50rpx;
+  height: 50rpx;
+  border-radius: 25rpx;
+  margin-left: -10rpx;
+  border: 2rpx solid #fff;
+}
+
+.more-members {
+  width: 50rpx;
+  height: 50rpx;
+  border-radius: 25rpx;
+  background-color: #f0f0f0;
+  color: #666;
+  font-size: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -10rpx;
+  border: 2rpx solid #fff;
 }
 </style>
