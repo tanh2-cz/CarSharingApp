@@ -51,11 +51,11 @@ def error(code, msg, http_status=400):
 @app.route('/order', methods=['GET', 'POST'])
 # App 支付，将 order_string 返回给 app 即可
 def create_order():
-    subject = "测试订单"
+    subject = "使用沙盒账户支付订单"
     alipay = create_alipay()
     order_string = alipay.api_alipay_trade_app_pay(
         out_trade_no=generate_order_number(),
-        total_amount=0.01,
+        total_amount=80.00,
         subject=subject,
         # notify_url="https://example.com/notify" # 可选，不填则使用默认 notify url
     )
